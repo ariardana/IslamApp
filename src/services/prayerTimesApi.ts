@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { PrayerTimesData } from '../types';
 
-const PRAYER_API_BASE = 'http://api.aladhan.com/v1';
+const PRAYER_API_BASE = 'https://api.aladhan.com/v1';
 
 export const prayerTimesApi = {
   // Get prayer times by city
