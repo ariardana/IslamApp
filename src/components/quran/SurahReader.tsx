@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Bookmark, BookmarkCheck, Play, Pause, Search } from 'lucide-react';
 import { useSurah } from '../../hooks/useQuran';
@@ -12,7 +12,6 @@ const SurahReader: React.FC = () => {
   const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
   const [playingAyah, setPlayingAyah] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const handleAudioPlay = (surahNum: number, ayahNum: number) => {
     if (currentAudio) {
@@ -47,7 +46,7 @@ const SurahReader: React.FC = () => {
     );
   };
 
-  const toggleBookmark = (ayah: any) => {
+  const toggleBookmark = (ayah: Ayah) => {
     const surahNum = Number(surahNumber);
     if (isBookmarked(surahNum, ayah.numberInSurah)) {
       removeBookmarkedAyah(surahNum, ayah.numberInSurah);
@@ -63,7 +62,7 @@ const SurahReader: React.FC = () => {
     }
   };
 
-  const filteredAyahs = surah?.ayahs?.filter((ayah: any) =>
+  const filteredAyahs = surah?.ayahs?.filter((ayah: Ayah) =>
     ayah.text.includes(searchTerm) || ayah.translation?.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
@@ -112,7 +111,7 @@ const SurahReader: React.FC = () => {
 
       {/* Ayahs */}
       <div className="space-y-6">
-        {(searchTerm ? filteredAyahs : surah?.ayahs)?.map((ayah: any) => (
+        {(searchTerm ? filteredAyahs : surah?.ayahs)?.map((ayah: Ayah) => (
           <div
             key={ayah.numberInSurah}
             className={`p-6 rounded-lg border transition-all duration-200 ${

@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { NewsArticle } from '../types';
 
 // Mock news service since we don't have a real API key

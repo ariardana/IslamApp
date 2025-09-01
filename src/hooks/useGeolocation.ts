@@ -34,7 +34,7 @@ export const useGeolocation = () => {
       });
     };
 
-    const errorHandler = (error: GeolocationPositionError) => {
+    const errorHandler = () => {
       setState(prev => ({
         ...prev,
         error: 'Tidak dapat mengakses lokasi. Silakan masukkan kota secara manual.',

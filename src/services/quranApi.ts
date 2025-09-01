@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Surah, Ayah, AyahTranslation } from '../types';
+import { Surah, Ayah } from '../types';
 
 const QURAN_API_BASE = 'https://api.alquran.cloud/v1';
 
@@ -17,7 +17,7 @@ export const quranApi = {
   },
 
   // Get surah with Indonesian translation
-  getSurahWithTranslation: async (surahNumber: number): Promise<any> => {
+  getSurahWithTranslation: async (surahNumber: number): Promise<Surah> => {
     const [arabicResponse, translationResponse] = await Promise.all([
       axios.get(`${QURAN_API_BASE}/surah/${surahNumber}`),
       axios.get(`${QURAN_API_BASE}/surah/${surahNumber}/id.indonesian`)
@@ -38,13 +38,13 @@ export const quranApi = {
   },
 
   // Search ayahs
-  searchAyahs: async (query: string): Promise<any> => {
+  searchAyahs: async (query: string): Promise<any> => { // The API response for search is complex, so we keep `any` for now
     const response = await axios.get(`${QURAN_API_BASE}/search/${query}/all/id.indonesian`);
     return response.data.data;
   },
 
   // Get Juz
-  getJuz: async (juzNumber: number): Promise<any> => {
+  getJuz: async (juzNumber: number): Promise<any> => { // The API response for Juz is complex, so we keep `any` for now
     const response = await axios.get(`${QURAN_API_BASE}/juz/${juzNumber}`);
     return response.data.data;
   },

@@ -1,5 +1,4 @@
-import { format, addDays } from 'date-fns';
-import { id } from 'date-fns/locale';
+
 
 export const islamicUtils = {
   // Convert Gregorian to Hijri (simplified calculation)
@@ -11,7 +10,7 @@ export const islamicUtils = {
     const hijriMonth = Math.floor(hijriDay / 29.53) + 1;
     const hijriDate = Math.floor(hijriDay % 29.53) + 1;
     
-    return `${hijriDate} ${this.getHijriMonthName(hijriMonth)} ${hijriYear} H`;
+    return `${hijriDate} ${islamicUtils.getHijriMonthName(hijriMonth)} ${hijriYear} H`;
   },
 
   getHijriMonthName: (month: number): string => {
@@ -53,7 +52,7 @@ export const islamicUtils = {
         const minutesLeft = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
         
         return {
-          nextPrayer: this.getPrayerNameInIndonesian(prayer),
+          nextPrayer: islamicUtils.getPrayerNameInIndonesian(prayer),
           timeLeft: `${hoursLeft}j ${minutesLeft}m`
         };
       }

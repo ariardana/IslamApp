@@ -4,14 +4,29 @@ import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterv
 import { id } from 'date-fns/locale';
 import { useAppStore } from '../../store/useAppStore';
 import { islamicUtils } from '../../utils/islamicUtils';
+import { useGeolocation } from '../../hooks/useGeolocation';
 
 const IslamicCalendar: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const { theme } = useAppStore();
+  const [cityInput, setCityInput] = useState('');
+  const { theme, setLocation } = useAppStore();
+  const geolocation = useGeolocation();
+
+  const handleCitySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Here you would typically use a geocoding API to get lat/lon from city name
+    // For this example, we'll just set a mock location
+    setLocation({ city: cityInput, latitude: -6.2088, longitude: 106.8456 });
+  };
+
+  const handleUseCurrentLocation = () => {
+    if (geolocation.latitude && geolocation.longitude) {
+      setLocation({ city: 'Current Location', latitude: geolocation.latitude, longitude: geolocation.longitude });
+    }
+  };
 
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
-  const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
   
   const startDate = new Date(monthStart);
   startDate.setDate(startDate.getDate() - getDay(monthStart));

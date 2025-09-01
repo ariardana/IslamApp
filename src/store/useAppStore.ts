@@ -14,7 +14,7 @@ interface AppStore extends AppState {
 
 export const useAppStore = create<AppStore>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       theme: { isDark: false },
       bookmarkedAyahs: [],
       bookmarkedNews: [],

@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { Newspaper, Bookmark, BookmarkCheck, Share2, ExternalLink } from 'lucide-react';
+import { Newspaper, Bookmark, BookmarkCheck, Share2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { newsApi } from '../../services/newsApi';
 import { useAppStore } from '../../store/useAppStore';
 import LoadingSpinner from '../common/LoadingSpinner';
+import { format } from 'date-fns';
+import { id } from 'date-fns/locale';
+import { NewsArticle } from '../../types';
 
 const NewsList: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -27,7 +30,7 @@ const NewsList: React.FC = () => {
     return bookmarkedNews.some(article => article.id === articleId);
   };
 
-  const toggleBookmark = (article: any) => {
+  const toggleBookmark = (article: NewsArticle) => {
     if (isBookmarked(article.id)) {
       removeBookmarkedNews(article.id);
     } else {
@@ -35,7 +38,7 @@ const NewsList: React.FC = () => {
     }
   };
 
-  const handleShare = async (article: any) => {
+  const handleShare = async (article: NewsArticle) => {
     if (navigator.share) {
       try {
         await navigator.share({
@@ -68,7 +71,7 @@ const NewsList: React.FC = () => {
           <button
             key={category}
             onClick={() => setSelectedCategory(category)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${ 
               selectedCategory === category
                 ? 'bg-emerald-600 text-white'
                 : theme.isDark
@@ -86,7 +89,7 @@ const NewsList: React.FC = () => {
         {news?.map((article) => (
           <article
             key={article.id}
-            className={`p-6 rounded-lg border transition-all duration-200 hover:shadow-md ${
+            className={`p-6 rounded-lg border transition-all duration-200 hover:shadow-md ${ 
               theme.isDark
                 ? 'bg-gray-800 border-gray-700 hover:bg-gray-750'
                 : 'bg-white border-gray-200 hover:bg-gray-50'
@@ -109,7 +112,7 @@ const NewsList: React.FC = () => {
                   <div className="flex items-center space-x-2 ml-4">
                     <button
                       onClick={() => toggleBookmark(article)}
-                      className={`p-1.5 rounded-lg transition-colors duration-200 ${
+                      className={`p-1.5 rounded-lg transition-colors duration-200 ${ 
                         theme.isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'
                       }`}
                     >
@@ -122,7 +125,7 @@ const NewsList: React.FC = () => {
                     
                     <button
                       onClick={() => handleShare(article)}
-                      className={`p-1.5 rounded-lg transition-colors duration-200 ${
+                      className={`p-1.5 rounded-lg transition-colors duration-200 ${ 
                         theme.isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'
                       }`}
                     >
@@ -142,7 +145,7 @@ const NewsList: React.FC = () => {
                     <span>{format(new Date(article.publishedAt), 'dd MMM yyyy', { locale: id })}</span>
                   </div>
                   
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${ 
                     theme.isDark ? 'bg-emerald-900 text-emerald-300' : 'bg-emerald-100 text-emerald-700'
                   }`}>
                     {categoryLabels[article.category]}

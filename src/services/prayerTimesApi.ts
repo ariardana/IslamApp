@@ -5,7 +5,7 @@ const PRAYER_API_BASE = 'https://api.aladhan.com/v1';
 
 export const prayerTimesApi = {
   // Get prayer times by city
-  getPrayerTimesByCity: async (city: string, country: string = 'Indonesia'): Promise<PrayerTimesData> => {
+    getPrayerTimesByCity: async (city: string, country: string): Promise<PrayerTimesData> => {
     const response = await axios.get(
       `${PRAYER_API_BASE}/timingsByCity`,
       {
@@ -54,7 +54,7 @@ export const prayerTimesApi = {
   },
 
   // Get Hijri calendar for month
-  getHijriCalendar: async (month: number, year: number): Promise<any> => {
+  getHijriCalendar: async (month: number, year: number): Promise<any> => { // The API response for Hijri Calendar is complex, so we keep `any` for now
     const response = await axios.get(
       `${PRAYER_API_BASE}/calendar/${year}/${month}`,
       {
