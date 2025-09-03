@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kesalahan Server - IslamApp</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-color: #f3f4f6;
+        color: #374151;
+      }
+      .container {
+        text-align: center;
+        padding: 2rem;
+        max-width: 500px;
+      }
+      .error-code {
+        font-size: 4rem;
+        font-weight: bold;
+        color: #ef4444;
+        margin-bottom: 1rem;
+      }
+      .error-message {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+      }
+      .error-description {
+        font-size: 1rem;
+        color: #6b7280;
+        margin-bottom: 2rem;
+      }
+      .back-link {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background-color: #10b981;
+        color: white;
+        text-decoration: none;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: background-color 0.2s;
+      }
+      .back-link:hover {
+        background-color: #059669;
+      }
+      .retry-link {
+        display: inline-block;
+        margin-left: 1rem;
+        padding: 0.75rem 1.5rem;
+        background-color: #6b7280;
+        color: white;
+        text-decoration: none;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: background-color 0.2s;
+      }
+      .retry-link:hover {
+        background-color: #4b5563;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="error-code">500</div>
+      <div class="error-message">Kesalahan Server Internal</div>
+      <div class="error-description">
+        Maaf, terjadi kesalahan pada server kami. Silakan coba lagi nanti.
+      </div>
+      <a href="/" class="back-link">Kembali ke Beranda</a>
+      <a href="javascript:window.location.reload()" class="retry-link">Coba Lagi</a>
+    </div>
+  </body>
+</html>

@@ -174,17 +174,28 @@ npm run build
 npm run preview
 ```
 
-### Deployment Options
-- **Vercel**: Deploy with serverless functions support using the included vercel.json configuration
+### Deployment ke Vercel
+1. **Import Project**: Masuk ke [Vercel Dashboard](https://vercel.com/dashboard) dan impor repository ini
+2. **Konfigurasi Environment Variables** (jika diperlukan):
+   - Tidak ada environment variables khusus yang diperlukan
+3. **Deploy**: Vercel akan secara otomatis mendeteksi konfigurasi dan membuild aplikasi
+4. **Domain**: Setelah deploy selesai, Vercel akan memberikan URL untuk aplikasi Anda
+
+### Deployment ke Platform Lain
 - **Netlify**: `netlify deploy --prod --dir=dist`
-- **GitHub Pages**: Push to branch gh-pages
+- **GitHub Pages**: Push ke branch gh-pages
 
 ### Environment Variables
-No environment variables are required for production deployment.
+Untuk lingkungan production, aplikasi menggunakan konfigurasi berikut:
+- API Quran: `https://equran.id/api/v2` (langsung)
+- API Doa: `https://doa-doa-api-ahmadramadhan.fly.dev/api` (langsung)
+- API Jadwal Sholat: `https://api.aladhan.com/v1` (langsung)
+
+Untuk lingkungan development, semua API di-proxy melalui server lokal untuk menghindari masalah CORS.
 
 ### API Data
 - **Prayers**: Static data included in the build for production
-- **Quran**: Fetched from external API (quran-api.santrikoding.com)
+- **Quran**: Fetched from external API (equran.id)
 - **Prayer Times**: Fetched from external API (api.aladhan.com)
 - **Calendar**: Fetched from external API (api.aladhan.com)
 
@@ -231,6 +242,14 @@ npm run build
 **Solusi**:
 - Periksa pengaturan lokasi
 - Pastikan koordinat atau nama kota sudah benar
+
+#### 4. Gagal memuat daftar surah di Vercel
+**Masalah**: Error saat memuat daftar surah di lingkungan production
+**Solusi**:
+- Pastikan server proxy berjalan dengan baik
+- Periksa logs Vercel untuk error spesifik
+- Coba refresh halaman beberapa kali
+- Jika masalah persisten, laporkan sebagai issue di GitHub
 
 ## 🤝 Kontribusi
 

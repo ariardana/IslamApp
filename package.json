@@ -5,11 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "tsc && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "server": "node server.js",
-    "dev:proxy": "concurrently \"npm run dev\" \"npm run server\""
+    "dev:proxy": "concurrently \"npm run dev\" \"npm run server\"",
+    "vercel-build": "npm run build"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.85.6",

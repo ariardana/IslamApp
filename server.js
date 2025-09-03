@@ -10,6 +10,12 @@ app.use(cors());
 // Parse JSON bodies
 app.use(express.json());
 
+// Logging middleware
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  next();
+});
+
 // API Documentation endpoint
 app.get('/api/docs', (req, res) => {
   res.json({
@@ -132,21 +138,28 @@ app.get('/api/prayers/:id', async (req, res) => {
   }
 });
 
-// Endpoint for getting all Quran surahs
+// Proxy endpoint for getting all Quran surahs
 app.get('/api/quran/surahs', async (req, res) => {
   try {
-    const response = await axios.get('https://quran-api.santrikoding.com/api/surah');
+    console.log('Proxying request to equran.id API for surahs');
+    const response = await axios.get('https://equran.id/api/v2/surat');
+    
     // Transform the response to match our application's expected format
-    const surahs = response.data.map(surah => ({
+    const surahs = response.data.data.map(surah => ({
       number: surah.nomor,
       name: surah.nama,
-      englishName: surah.nama_latin,
+      englishName: surah.namaLatin,
       englishNameTranslation: surah.arti,
-      numberOfAyahs: surah.jumlah_ayat,
-      revelationType: surah.tempat_turun,
+      numberOfAyahs: surah.jumlahAyat,
+      revelationType: surah.tempatTurun,
       description: surah.deskripsi,
-      audio: surah.audio,
+      audio: surah.audioFull ? Object.values(surah.audioFull)[0] : undefined,
+      namaLatin: surah.namaLatin,
+      tempatTurun: surah.tempatTurun,
+      arti: surah.arti,
+      audioFull: surah.audioFull,
     }));
+    
     res.json(surahs);
   } catch (error) {
     console.error('Error fetching surahs:', error);
@@ -154,33 +167,45 @@ app.get('/api/quran/surahs', async (req, res) => {
   }
 });
 
-// Endpoint for getting a specific Quran surah with ayahs
+// Proxy endpoint for getting a specific Quran surah with ayahs
 app.get('/api/quran/surahs/:number', async (req, res) => {
   try {
     const { number } = req.params;
-    const response = await axios.get(`https://quran-api.santrikoding.com/api/surah/${number}`);
+    console.log(`Proxying request to equran.id API for surah ${number}`);
+    const response = await axios.get(`https://equran.id/api/v2/surat/${number}`);
     
     // Transform the response to match our application's expected format
     const surah = {
-      number: response.data.nomor,
-      name: response.data.nama,
-      englishName: response.data.nama_latin,
-      englishNameTranslation: response.data.arti,
-      numberOfAyahs: response.data.jumlah_ayat,
-      revelationType: response.data.tempat_turun,
-      description: response.data.deskripsi,
-      audio: response.data.audio,
-      ayahs: response.data.ayat.map(ayah => ({
-        number: ayah.id,
-        text: ayah.ar,
-        numberInSurah: ayah.nomor,
-        translation: ayah.idn,
+      number: response.data.data.nomor,
+      name: response.data.data.nama,
+      englishName: response.data.data.namaLatin,
+      englishNameTranslation: response.data.data.arti,
+      numberOfAyahs: response.data.data.jumlahAyat,
+      revelationType: response.data.data.tempatTurun,
+      description: response.data.data.deskripsi,
+      audio: response.data.data.audioFull ? Object.values(response.data.data.audioFull)[0] : undefined,
+      namaLatin: response.data.data.namaLatin,
+      tempatTurun: response.data.data.tempatTurun,
+      arti: response.data.data.arti,
+      audioFull: response.data.data.audioFull,
+      ayahs: response.data.data.ayat.map(ayah => ({
+        number: ayah.nomorAyat,
+        text: ayah.teksArab,
+        numberInSurah: ayah.nomorAyat,
         juz: 0,
         manzil: 0,
         page: 0,
         ruku: 0,
         hizbQuarter: 0,
         sajda: false,
+        audio: ayah.audio ? Object.values(ayah.audio)[0] : undefined,
+        translation: ayah.teksIndonesia,
+        transliteration: ayah.teksLatin,
+        nomorAyat: ayah.nomorAyat,
+        teksArab: ayah.teksArab,
+        teksLatin: ayah.teksLatin,
+        teksIndonesia: ayah.teksIndonesia,
+        audioSecondary: ayah.audio ? Object.values(ayah.audio) : [],
       })),
     };
     
@@ -191,7 +216,7 @@ app.get('/api/quran/surahs/:number', async (req, res) => {
   }
 });
 
-// Endpoint for getting prayer times by city
+// Proxy endpoint for getting prayer times by city
 app.get('/api/prayer-times/city', async (req, res) => {
   try {
     const { city, country = 'Indonesia' } = req.query;
@@ -202,7 +227,7 @@ app.get('/api/prayer-times/city', async (req, res) => {
     const encodedCity = encodeURIComponent(city);
     const encodedCountry = encodeURIComponent(country);
     
-    const response = await axios.get(`https://api.aladhan.com/v1/timingsByCity`, {
+    const response = await axios.get('https://api.aladhan.com/v1/timingsByCity', {
       params: {
         city: encodedCity,
         country: encodedCountry,
@@ -221,7 +246,7 @@ app.get('/api/prayer-times/city', async (req, res) => {
   }
 });
 
-// Endpoint for getting prayer times by coordinates
+// Proxy endpoint for getting prayer times by coordinates
 app.get('/api/prayer-times/coordinates', async (req, res) => {
   try {
     const { latitude, longitude } = req.query;
@@ -229,7 +254,7 @@ app.get('/api/prayer-times/coordinates', async (req, res) => {
       return res.status(400).json({ error: 'Latitude and longitude parameters are required' });
     }
     
-    const response = await axios.get(`https://api.aladhan.com/v1/timings`, {
+    const response = await axios.get('https://api.aladhan.com/v1/timings', {
       params: {
         latitude,
         longitude,
@@ -248,7 +273,7 @@ app.get('/api/prayer-times/coordinates', async (req, res) => {
   }
 });
 
-// Endpoint for getting Hijri calendar
+// Proxy endpoint for getting Hijri calendar
 app.get('/api/calendar/hijri/:year/:month', async (req, res) => {
   try {
     const { year, month } = req.params;
@@ -273,6 +298,84 @@ app.get('/api/calendar/hijri/:year/:month', async (req, res) => {
   }
 });
 
+// Proxy endpoint for Quran API (to avoid CORS issues)
+app.get('/api/quran/surahs', async (req, res) => {
+  try {
+    console.log('Proxying request to equran.id API for surahs');
+    const response = await axios.get('https://equran.id/api/v2/surat');
+    
+    // Transform the response to match our application's expected format
+    const surahs = response.data.data.map(surah => ({
+      number: surah.nomor,
+      name: surah.nama,
+      englishName: surah.namaLatin,
+      englishNameTranslation: surah.arti,
+      numberOfAyahs: surah.jumlahAyat,
+      revelationType: surah.tempatTurun,
+      description: surah.deskripsi,
+      audio: surah.audioFull ? Object.values(surah.audioFull)[0] : undefined,
+      namaLatin: surah.namaLatin,
+      tempatTurun: surah.tempatTurun,
+      arti: surah.arti,
+      audioFull: surah.audioFull,
+    }));
+    
+    res.json(surahs);
+  } catch (error) {
+    console.error('Error fetching surahs:', error);
+    res.status(500).json({ error: 'Failed to fetch surahs' });
+  }
+});
+
+// Proxy endpoint for getting a specific Quran surah with ayahs
+app.get('/api/quran/surahs/:number', async (req, res) => {
+  try {
+    const { number } = req.params;
+    console.log(`Proxying request to equran.id API for surah ${number}`);
+    const response = await axios.get(`https://equran.id/api/v2/surat/${number}`);
+    
+    // Transform the response to match our application's expected format
+    const surah = {
+      number: response.data.data.nomor,
+      name: response.data.data.nama,
+      englishName: response.data.data.namaLatin,
+      englishNameTranslation: response.data.data.arti,
+      numberOfAyahs: response.data.data.jumlahAyat,
+      revelationType: response.data.data.tempatTurun,
+      description: response.data.data.deskripsi,
+      audio: response.data.data.audioFull ? Object.values(response.data.data.audioFull)[0] : undefined,
+      namaLatin: response.data.data.namaLatin,
+      tempatTurun: response.data.data.tempatTurun,
+      arti: response.data.data.arti,
+      audioFull: response.data.data.audioFull,
+      ayahs: response.data.data.ayat.map(ayah => ({
+        number: ayah.nomorAyat,
+        text: ayah.teksArab,
+        numberInSurah: ayah.nomorAyat,
+        juz: 0,
+        manzil: 0,
+        page: 0,
+        ruku: 0,
+        hizbQuarter: 0,
+        sajda: false,
+        audio: ayah.audio ? Object.values(ayah.audio)[0] : undefined,
+        translation: ayah.teksIndonesia,
+        transliteration: ayah.teksLatin,
+        nomorAyat: ayah.nomorAyat,
+        teksArab: ayah.teksArab,
+        teksLatin: ayah.teksLatin,
+        teksIndonesia: ayah.teksIndonesia,
+        audioSecondary: ayah.audio ? Object.values(ayah.audio) : [],
+      })),
+    };
+    
+    res.json(surah);
+  } catch (error) {
+    console.error(`Error fetching surah ${req.params.number}:`, error);
+    res.status(500).json({ error: 'Failed to fetch surah' });
+  }
+});
+
 // Endpoint for getting bookmarks (simplified version)
 app.get('/api/bookmarks', (req, res) => {
   // In a real implementation, this would require authentication
@@ -282,6 +385,26 @@ app.get('/api/bookmarks', (req, res) => {
     prayers: [],
     news: []
   });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  res.status(500).json({ 
+    error: 'Internal server error',
+    message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
+  });
+});
+
+// Handle 404 for API routes
+app.use('/api/*', (req, res) => {
+  res.status(404).json({ error: 'API endpoint not found' });
+});
+
+// Handle 404 for all other routes (let client-side routing handle it)
+app.get('*', (req, res) => {
+  // For Vercel, we'll send the index.html for client-side routing
+  res.sendFile('index.html', { root: '.' });
 });
 
 // Start the server if this file is run directly

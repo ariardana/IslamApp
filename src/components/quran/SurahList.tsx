@@ -1,20 +1,56 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Book, ChevronRight } from 'lucide-react';
+import { Book, ChevronRight, RefreshCw } from 'lucide-react';
 import { useSurahs } from '../../hooks/useQuran';
 import { useAppStore } from '../../store/useAppStore';
 import LoadingSpinner from '../common/LoadingSpinner';
 
 const SurahList: React.FC = () => {
-  const { data: surahs, isLoading, error } = useSurahs();
+  const { data: surahs, isLoading, error, refetch } = useSurahs();
   const { theme } = useAppStore();
 
-  if (isLoading) return <LoadingSpinner />;
-  if (error) return <div className="text-center py-8 text-red-500">Gagal memuat daftar surah</div>;
+  // Log untuk debugging
+  useEffect(() => {
+    console.log('SurahList component rendered');
+    console.log('Surahs data:', surahs);
+    console.log('Loading state:', isLoading);
+    console.log('Error state:', error);
+  }, [surahs, isLoading, error]);
+
+  if (isLoading) {
+    console.log('Showing loading spinner');
+    return <LoadingSpinner />;
+  }
+  
+  if (error) {
+    console.log('Showing error message:', error);
+    return (
+      <div className={`rounded-xl p-6 ${theme.isDark ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
+        <div className="text-center py-8">
+          <p className="text-red-500 font-medium mb-2">Gagal memuat daftar surah</p>
+          <p className={`text-sm ${theme.isDark ? 'text-red-300' : 'text-red-700'} mb-4`}>
+            {(error as Error).message || 'Pastikan koneksi internet Anda stabil dan coba lagi'}
+          </p>
+          <button
+            onClick={() => refetch()}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
+              theme.isDark 
+                ? 'bg-red-800 text-white hover:bg-red-700' 
+                : 'bg-red-100 text-red-700 hover:bg-red-200'
+            }`}
+          >
+            Coba Lagi
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // Calculate total surahs count
   const totalSurahs = surahs?.length || 0;
   const totalAyahs = surahs?.reduce((sum, surah) => sum + surah.numberOfAyahs, 0) || 0;
+
+  console.log(`Rendering ${totalSurahs} surahs`);
 
   return (
     <div className="space-y-6">
