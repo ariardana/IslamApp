@@ -18,54 +18,60 @@ const Navigation: React.FC = () => {
   return (
     <>
       {/* Desktop Sidebar */}
-      <nav className={`hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:pt-16 ${
-        theme.isDark ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'
-      } border-r transition-colors duration-200`}>
-        <div className="flex-1 overflow-y-auto pt-5 pb-4">
-          <div className="px-3 space-y-1">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className={({ isActive }) =>
-                  `flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
-                    isActive
-                      ? 'bg-emerald-100 text-emerald-700'
-                      : theme.isDark
-                      ? 'text-gray-300 hover:bg-gray-800 hover:text-white'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                  }`
-                }
-              >
-                <item.icon className="mr-3 h-5 w-5" />
-                {item.label}
-              </NavLink>
-            ))}
+      <div className="hidden lg:block lg:w-64 lg:fixed lg:inset-y-0 lg:z-50">
+        <nav className={`h-full w-64 flex flex-col ${
+          theme.isDark ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'
+        } border-r transition-colors duration-200 shadow-lg`}>
+          <div className="flex-1 overflow-y-auto pt-16 pb-4">
+            <div className="px-4 space-y-1 mt-4">
+              {navItems.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  className={({ isActive }) =>
+                    `flex items-center px-4 py-3.5 rounded-xl text-base font-medium transition-all duration-200 ${
+                      isActive
+                        ? 'bg-emerald-500 text-white shadow-md'
+                        : theme.isDark
+                        ? 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    }`
+                  }
+                >
+                  <item.icon className="mr-4 h-5 w-5 flex-shrink-0" />
+                  <span className="truncate">{item.label}</span>
+                </NavLink>
+              ))}
+            </div>
           </div>
-        </div>
-      </nav>
+          
+          <div className={`px-4 py-4 text-center text-xs ${theme.isDark ? 'text-gray-500' : 'text-gray-400'} border-t ${theme.isDark ? 'border-gray-700' : 'border-gray-200'}`}>
+            IslamApp v1.0
+          </div>
+        </nav>
+      </div>
 
       {/* Mobile Bottom Navigation */}
-      <nav className={`lg:hidden fixed bottom-0 left-0 right-0 ${
+      <nav className={`lg:hidden fixed bottom-0 left-0 right-0 z-50 ${
         theme.isDark ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'
-      } border-t transition-colors duration-200 z-50`}>
-        <div className="flex overflow-x-auto py-1.5 sm:py-2 hide-scrollbar">
+      } border-t transition-colors duration-200 shadow-lg`}>
+        <div className="flex overflow-x-auto py-2 hide-scrollbar px-2">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `flex flex-col items-center py-2 px-3 sm:px-4 rounded-lg transition-colors duration-200 flex-shrink-0 min-w-[60px] sm:min-w-[70px] ${
+                `flex flex-col items-center py-2 px-3 rounded-xl transition-all duration-200 flex-shrink-0 min-w-[60px] ${
                   isActive
-                    ? 'text-emerald-600'
+                    ? 'text-emerald-600 bg-emerald-50 dark:bg-gray-800'
                     : theme.isDark
-                    ? 'text-gray-400 hover:text-white'
-                    : 'text-gray-500 hover:text-gray-900'
+                    ? 'text-gray-400 hover:text-white hover:bg-gray-800'
+                    : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
                 }`
               }
             >
-              <item.icon className="h-4 w-4 sm:h-5 sm:w-5 mb-0.5 sm:mb-1" />
-              <span className="text-[0.6rem] sm:text-xs font-medium whitespace-nowrap">{item.label}</span>
+              <item.icon className="h-5 w-5 mb-1 flex-shrink-0" />
+              <span className="text-[0.65rem] font-medium whitespace-nowrap">{item.label}</span>
             </NavLink>
           ))}
         </div>

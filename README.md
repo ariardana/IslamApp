@@ -175,7 +175,7 @@ npm run preview
 ```
 
 ### Deployment Options
-- **Vercel**: Works out of the box with static deployment
+- **Vercel**: Deploy with serverless functions support using the included vercel.json configuration
 - **Netlify**: `netlify deploy --prod --dir=dist`
 - **GitHub Pages**: Push to branch gh-pages
 

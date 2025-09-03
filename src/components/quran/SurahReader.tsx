@@ -5,6 +5,27 @@ import { useSurah } from '../../hooks/useQuran';
 import { useAppStore } from '../../store/useAppStore';
 import LoadingSpinner from '../common/LoadingSpinner';
 
+// Definisikan interface Ayah di sini karena tidak diimpor dari file terpisah
+interface Ayah {
+  number: number;
+  text: string;
+  numberInSurah: number;
+  juz: number;
+  manzil: number;
+  page: number;
+  ruku: number;
+  hizbQuarter: number;
+  sajda: boolean;
+  translation?: string;
+  transliteration?: string;
+  // New fields for equran.id API
+  nomorAyat?: number;
+  teksArab?: string;
+  teksLatin?: string;
+  teksIndonesia?: string;
+  audio?: string;
+}
+
 const SurahReader: React.FC = () => {
   const { surahNumber } = useParams<{ surahNumber: string }>();
   const { data: surah, isLoading, error } = useSurah(Number(surahNumber));
@@ -63,14 +84,14 @@ const SurahReader: React.FC = () => {
         ayahNumber: ayah.numberInSurah,
         surahName: surah?.name || '',
         text: ayah.text,
-        translation: ayah.translation,
+        translation: ayah.translation || '',
         addedAt: new Date().toISOString(),
       });
     }
   };
 
   const filteredAyahs = surah?.ayahs?.filter((ayah: Ayah) =>
-    ayah.text.includes(searchTerm) || ayah.translation?.toLowerCase().includes(searchTerm.toLowerCase())
+    ayah.text.includes(searchTerm) || (ayah.translation && ayah.translation.toLowerCase().includes(searchTerm.toLowerCase()))
   ) || [];
 
   if (isLoading) return <LoadingSpinner />;
@@ -80,20 +101,39 @@ const SurahReader: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-3 sm:space-x-4">
-          <Link
-            to="/"
-            className={`p-2 rounded-lg transition-colors duration-200 ${
-              theme.isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
-            }`}
-          >
-            <ArrowLeft className="h-6 w-6" />
-          </Link>
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold">{surah?.name}</h1>
-            <p className={`text-xs sm:text-sm ${theme.isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-              {surah?.englishNameTranslation} • {surah?.numberOfAyahs} ayat
-            </p>
+        <div className="flex items-center space-x-3 min-w-0">
+                      <Link
+              to="/"
+              className={`p-2 rounded-lg transition-colors duration-200 flex-shrink-0 ${
+                theme.isDark ? 'hover:bg-gray-800' : 'hover:bg-amber-50'
+              }`}
+            >
+              <ArrowLeft className={`h-6 w-6 ${theme.isDark ? 'text-amber-100' : 'text-black'}`} />
+            </Link>
+          <div className="min-w-0">
+            <h1 style={{ color: theme.isDark ? 'inherit' : 'black' }} className="text-xl font-bold truncate text-black dark:text-amber-100">{surah?.name}</h1>
+            <div className="flex flex-wrap items-center gap-1">
+              <p style={{ color: theme.isDark ? 'inherit' : 'black' }} className={`text-xs ${theme.isDark ? 'text-amber-200' : 'text-black'}`}>
+                {surah?.englishName}
+              </p>
+              <span style={{ color: theme.isDark ? 'inherit' : 'black' }} className={`text-xs ${theme.isDark ? 'text-amber-300' : 'text-black'}`}>
+                •
+              </span>
+              <p style={{ color: theme.isDark ? 'inherit' : 'black' }} className={`text-xs ${theme.isDark ? 'text-amber-300' : 'text-black'}`}>
+                {surah?.numberOfAyahs} ayat
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-1 mt-1">
+              <p style={{ color: theme.isDark ? 'inherit' : 'black' }} className={`text-xs ${theme.isDark ? 'text-amber-300' : 'text-black'}`}>
+                {surah?.arti}
+              </p>
+              <span style={{ color: theme.isDark ? 'inherit' : 'black' }} className={`text-xs ${theme.isDark ? 'text-amber-300' : 'text-black'}`}>
+                •
+              </span>
+              <p style={{ color: theme.isDark ? 'inherit' : 'black' }} className={`text-xs ${theme.isDark ? 'text-amber-300' : 'text-black'}`}>
+                {surah?.tempatTurun}
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -101,45 +141,47 @@ const SurahReader: React.FC = () => {
       {/* Search */}
       <div className="relative">
         <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${
-          theme.isDark ? 'text-gray-400' : 'text-gray-400'
+          theme.isDark ? 'text-amber-300' : 'text-black'
         }`} />
         <input
           type="text"
           placeholder="Cari dalam surah ini..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className={`w-full pl-10 pr-4 py-2 sm:py-3 rounded-lg border transition-colors duration-200 ${
+          className={`w-full pl-10 pr-4 py-2 rounded-lg border transition-colors duration-200 ${
             theme.isDark
-              ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-400'
-              : 'bg-white border-gray-200 text-gray-900 placeholder-gray-500'
-          } focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm sm:text-base`}
+              ? 'bg-gray-800 border-gray-700 text-white placeholder-amber-300'
+              : 'bg-white border-gray-200 text-black placeholder-black'
+          } focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm`}
         />
       </div>
 
       {/* Ayahs */}
-      <div className="space-y-4 sm:space-y-6">
+      <div className="space-y-4">
         {(searchTerm ? filteredAyahs : surah?.ayahs)?.map((ayah: Ayah) => (
           <div
             key={ayah.numberInSurah}
-            className={`p-4 sm:p-6 rounded-lg border transition-all duration-200 ${
+            className={`p-4 rounded-lg border transition-all duration-200 ${
               theme.isDark
                 ? 'bg-gray-800 border-gray-700'
                 : 'bg-white border-gray-200'
             }`}
           >
             {/* Ayah Number and Controls */}
-            <div className="flex items-center justify-between mb-3 sm:mb-4">
-              <div className={`flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full ${
-                theme.isDark ? 'bg-emerald-700' : 'bg-emerald-100'
-              }`}>
-                <span className={`text-xs sm:text-sm font-bold ${
-                  theme.isDark ? 'text-white' : 'text-emerald-700'
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center space-x-2">
+                <div className={`flex items-center justify-center w-7 h-7 rounded-full ${
+                  theme.isDark ? 'bg-emerald-700' : 'bg-amber-100'
                 }`}>
-                  {ayah.numberInSurah}
-                </span>
+                  <span className={`text-xs font-bold ${
+                    theme.isDark ? 'text-amber-100' : 'text-black'
+                  }`}>
+                    {ayah.numberInSurah}
+                  </span>
+                </div>
               </div>
               
-              <div className="flex items-center space-x-1 sm:space-x-2">
+              <div className="flex items-center space-x-1">
                 <button
                   onClick={() => {
                     if (playingAyah === ayah.numberInSurah) {
@@ -148,51 +190,51 @@ const SurahReader: React.FC = () => {
                       handleAudioPlay(ayah.audio || '', ayah.numberInSurah);
                     }
                   }}
-                  className={`p-1.5 sm:p-2 rounded-lg transition-colors duration-200 ${
+                  className={`p-1.5 rounded-lg transition-colors duration-200 ${
                     theme.isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'
                   }`}
                 >
                   {playingAyah === ayah.numberInSurah ? (
-                    <Pause className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600" />
+                    <Pause className="h-4 w-4 text-emerald-600" />
                   ) : (
-                    <Play className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600" />
+                    <Play className="h-4 w-4 text-emerald-600" />
                   )}
                 </button>
                 
                 <button
                   onClick={() => toggleBookmark(ayah)}
-                  className={`p-1.5 sm:p-2 rounded-lg transition-colors duration-200 ${
+                  className={`p-1.5 rounded-lg transition-colors duration-200 ${
                     theme.isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'
                   }`}
                 >
                   {isBookmarked(Number(surahNumber), ayah.numberInSurah) ? (
-                    <BookmarkCheck className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500" />
+                    <BookmarkCheck className="h-4 w-4 text-amber-500" />
                   ) : (
-                    <Bookmark className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
+                    <Bookmark className="h-4 w-4 text-black" />
                   )}
                 </button>
               </div>
             </div>
 
             {/* Arabic Text */}
-            <div className="mb-3 sm:mb-4">
-              <p className="text-xl sm:text-2xl leading-loose text-right font-arabic" dir="rtl">
+            <div className="mb-3">
+              <p style={{ color: theme.isDark ? 'inherit' : 'black' }} className="text-xl leading-loose text-right font-arabic text-black dark:text-amber-100" dir="rtl">
                 {ayah.text}
               </p>
             </div>
 
             {/* Latin Transliteration */}
             {ayah.transliteration && (
-              <div className={`p-3 sm:p-4 rounded-lg ${theme.isDark ? 'bg-gray-700' : 'bg-gray-50'} mb-3`}>
-                <p className="text-sm sm:text-base leading-relaxed italic">
+              <div className={`p-3 rounded-lg ${theme.isDark ? 'bg-amber-900/20' : 'bg-amber-50'}`}>
+                <p style={{ color: theme.isDark ? 'inherit' : 'black' }} className={`text-sm leading-relaxed italic ${theme.isDark ? 'text-amber-200' : 'text-black'}`}>
                   {ayah.transliteration}
                 </p>
               </div>
             )}
 
             {/* Translation */}
-            <div className={`p-3 sm:p-4 rounded-lg ${theme.isDark ? 'bg-gray-700' : 'bg-gray-50'}`}>
-              <p className="text-sm sm:text-base leading-relaxed">
+            <div className={`p-3 rounded-lg mt-3 ${theme.isDark ? 'bg-amber-900/20' : 'bg-amber-50'}`}>
+              <p style={{ color: theme.isDark ? 'inherit' : 'black' }} className={`text-sm leading-relaxed ${theme.isDark ? 'text-amber-200' : 'text-black'}`}>
                 {ayah.translation}
               </p>
             </div>

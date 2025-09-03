@@ -1,14 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import axios from 'axios';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 3001;
 
 // Enable CORS for all origins
 app.use(cors());
@@ -96,7 +90,7 @@ app.get('/api/docs', (req, res) => {
         "/api/bookmarks": {
           method: "GET",
           description: "Get all bookmarked items (requires authentication)",
-          response: "Array of bookmarked ayahs, prayers, and news articles"
+          response: "Array of bookmarked ayahs, prayers, dan news articles"
         }
       }
     }
@@ -290,6 +284,11 @@ app.get('/api/bookmarks', (req, res) => {
   });
 });
 
+// Start the server if this file is run directly
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log(`Proxy server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
+
+// Export for Vercel serverless functions
+export default app;

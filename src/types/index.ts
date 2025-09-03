@@ -7,6 +7,13 @@ export interface Surah {
   revelationType: string;
   description?: string;
   audio?: string;
+  // New fields for equran.id API
+  namaLatin?: string;
+  tempatTurun?: string;
+  arti?: string;
+  audioFull?: {
+    [key: string]: string;
+  };
 }
 
 export interface Ayah {
@@ -21,6 +28,14 @@ export interface Ayah {
   sajda: boolean;
   translation?: string;
   transliteration?: string;
+  // New fields for equran.id API
+  nomorAyat?: number;
+  teksArab?: string;
+  teksLatin?: string;
+  teksIndonesia?: string;
+  audio?: {
+    [key: string]: string;
+  };
 }
 
 export interface AyahTranslation {
