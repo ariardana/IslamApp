@@ -4,12 +4,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently \"vite\" \"node server.js\"",
     "build": "tsc && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "server": "node server.js",
-    "dev:proxy": "concurrently \"npm run dev\" \"npm run server\"",
+    "dev:proxy": "concurrently \"vite\" \"node server.js\"",
+    "start": "concurrently \"vite\" \"node server.js\"",
     "vercel-build": "npm run build"
   },
   "dependencies": {

@@ -221,63 +221,39 @@ const handleAudioPlay = (ayah: Ayah) => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-3 min-w-0">
-                      <Link
-              to="/"
-              className={`p-2 rounded-lg transition-colors duration-200 flex-shrink-0 ${
-                theme.isDark ? 'hover:bg-gray-800' : 'hover:bg-amber-50'
-              }`}
-            >
-              <ArrowLeft className={`h-6 w-6 ${theme.isDark ? 'text-amber-100' : 'text-black'}`} />
-            </Link>
-          <div className="min-w-0">
-            <h1 style={{ color: theme.isDark ? 'inherit' : 'black' }} className="text-xl font-bold truncate text-black dark:text-amber-100">{surah?.name}</h1>
-            <div className="flex flex-wrap items-center gap-1">
-              <p style={{ color: theme.isDark ? 'inherit' : 'black' }} className={`text-xs ${theme.isDark ? 'text-amber-200' : 'text-black'}`}>
-                {surah?.englishName}
-              </p>
-              <span style={{ color: theme.isDark ? 'inherit' : 'black' }} className={`text-xs ${theme.isDark ? 'text-amber-300' : 'text-black'}`}>
-                •
-              </span>
-              <p style={{ color: theme.isDark ? 'inherit' : 'black' }} className={`text-xs ${theme.isDark ? 'text-amber-300' : 'text-black'}`}>
-                {surah?.numberOfAyahs} ayat
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center gap-1 mt-1">
-              <p style={{ color: theme.isDark ? 'inherit' : 'black' }} className={`text-xs ${theme.isDark ? 'text-amber-300' : 'text-black'}`}>
-                {surah?.arti}
-              </p>
-              <span style={{ color: theme.isDark ? 'inherit' : 'black' }} className={`text-xs ${theme.isDark ? 'text-amber-300' : 'text-black'}`}>
-                •
-              </span>
-              <p style={{ color: theme.isDark ? 'inherit' : 'black' }} className={`text-xs ${theme.isDark ? 'text-amber-300' : 'text-black'}`}>
-                {surah?.tempatTurun}
-              </p>
-            </div>
+      <div className="flex items-center space-x-3 min-w-0">
+        <Link
+          to="/"
+          className={`p-2 rounded-lg transition-colors duration-200 flex-shrink-0 ${
+            theme.isDark ? 'hover:bg-gray-800' : 'hover:bg-amber-50'
+          }`}
+        >
+          <ArrowLeft className={`h-6 w-6 ${theme.isDark ? 'text-amber-100' : 'text-black'}`} />
+        </Link>
+        <div className="min-w-0">
+          <h1 style={{ color: theme.isDark ? 'inherit' : 'black' }} className="text-xl font-bold truncate text-black dark:text-amber-100">{surah?.name}</h1>
+          <div className="flex flex-wrap items-center gap-1">
+            <p style={{ color: theme.isDark ? 'inherit' : 'black' }} className={`text-xs ${theme.isDark ? 'text-amber-200' : 'text-black'}`}>
+              {surah?.englishName}
+            </p>
+            <span style={{ color: theme.isDark ? 'inherit' : 'black' }} className={`text-xs ${theme.isDark ? 'text-amber-300' : 'text-black'}`}>
+              •
+            </span>
+            <p style={{ color: theme.isDark ? 'inherit' : 'black' }} className={`text-xs ${theme.isDark ? 'text-amber-300' : 'text-black'}`}>
+              {surah?.numberOfAyahs} ayat
+            </p>
           </div>
-        </div>
-        
-        {/* Qari Selection */}
-        <div className="flex flex-col items-end">
-          <label className={`text-xs ${theme.isDark ? 'text-amber-300' : 'text-gray-600'}`}>
-            Pilih Qari
-          </label>
-          <select
-            value={selectedQari}
-            onChange={(e) => setSelectedQari(e.target.value)}
-            className={`text-sm rounded px-2 py-1 ${
-              theme.isDark
-                ? 'bg-gray-800 border-gray-700 text-white'
-                : 'bg-white border-gray-300 text-black'
-            } border`}
-          >
-            <option value="01">Abdullah Al-Juhany</option>
-            <option value="02">Abdul Muhsin Al-Qasim</option>
-            <option value="03">Abdurrahman As-Sudais</option>
-            <option value="04">Ibrahim Al-Dossari</option>
-            <option value="05">Misyari Rasyid Al-Afasy</option>
-          </select>
+          <div className="flex flex-wrap items-center gap-1 mt-1">
+            <p style={{ color: theme.isDark ? 'inherit' : 'black' }} className={`text-xs ${theme.isDark ? 'text-amber-300' : 'text-black'}`}>
+              {surah?.arti}
+            </p>
+            <span style={{ color: theme.isDark ? 'inherit' : 'black' }} className={`text-xs ${theme.isDark ? 'text-amber-300' : 'text-black'}`}>
+              •
+            </span>
+            <p style={{ color: theme.isDark ? 'inherit' : 'black' }} className={`text-xs ${theme.isDark ? 'text-amber-300' : 'text-black'}`}>
+              {surah?.tempatTurun}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -297,6 +273,28 @@ const handleAudioPlay = (ayah: Ayah) => {
               : 'bg-white border-gray-200 text-black placeholder-black'
           } focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm`}
         />
+      </div>
+
+      {/* Qari Selection */}
+      <div className="flex flex-col">
+        <label className={`text-xs mb-1 ${theme.isDark ? 'text-amber-300' : 'text-gray-600'}`}>
+          Pilih Qari
+        </label>
+        <select
+          value={selectedQari}
+          onChange={(e) => setSelectedQari(e.target.value)}
+          className={`w-full text-sm rounded px-3 py-2 ${
+            theme.isDark
+              ? 'bg-gray-800 border-gray-700 text-white'
+              : 'bg-white border-gray-300 text-black'
+          } border`}
+        >
+          <option value="01">Abdullah Al-Juhany</option>
+          <option value="02">Abdul Muhsin Al-Qasim</option>
+          <option value="03">Abdurrahman As-Sudais</option>
+          <option value="04">Ibrahim Al-Dossari</option>
+          <option value="05">Misyari Rasyid Al-Afasy</option>
+        </select>
       </div>
 
       {/* Ayahs */}
@@ -328,13 +326,6 @@ const handleAudioPlay = (ayah: Ayah) => {
                     {getAyahAudioUrl(ayah).substring(0, 30)}...
                   </div>
                 )}
-                {/* Display selected qari */}
-                <div className="text-xs text-gray-500">
-                  Qari: {selectedQari === '01' ? 'Al-Juhany' : 
-                        selectedQari === '02' ? 'Al-Qasim' : 
-                        selectedQari === '03' ? 'As-Sudais' : 
-                        selectedQari === '04' ? 'Al-Dossari' : 'Al-Afasy'}
-                </div>
               </div>
               
               <div className="flex items-center space-x-1">
