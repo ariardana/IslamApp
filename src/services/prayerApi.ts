@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { Prayer } from '../types';
 
-// Use local proxy to avoid CORS issues in development
-const PRAYER_API_BASE = import.meta.env.DEV ? '/api' : '';
+// Use /api prefix for all environments
+const PRAYER_API_BASE = '/api';
 
 // Create an axios instance with default config
 const apiClient = axios.create({
