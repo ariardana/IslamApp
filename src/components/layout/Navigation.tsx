@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Book, Clock, Calendar, Newspaper, Bookmark } from 'lucide-react';
+import { Book, Clock, Calendar, BookOpen, Bookmark, FileText } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 
 const Navigation: React.FC = () => {
@@ -10,8 +10,9 @@ const Navigation: React.FC = () => {
     { to: '/', icon: Book, label: 'Al-Qur\'an' },
     { to: '/prayer-times', icon: Clock, label: 'Jadwal Sholat' },
     { to: '/calendar', icon: Calendar, label: 'Kalender' },
-    { to: '/news', icon: Newspaper, label: 'Berita' },
+    { to: '/prayers', icon: BookOpen, label: 'Kumpulan Doa' },
     { to: '/bookmarks', icon: Bookmark, label: 'Bookmark' },
+    { to: '/api-docs', icon: FileText, label: 'API Docs' },
   ];
 
   return (
@@ -48,13 +49,13 @@ const Navigation: React.FC = () => {
       <nav className={`lg:hidden fixed bottom-0 left-0 right-0 ${
         theme.isDark ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'
       } border-t transition-colors duration-200 z-50`}>
-        <div className="flex justify-around items-center py-2">
+        <div className="flex overflow-x-auto py-1.5 sm:py-2 hide-scrollbar">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `flex flex-col items-center py-2 px-3 rounded-lg transition-colors duration-200 ${
+                `flex flex-col items-center py-2 px-3 sm:px-4 rounded-lg transition-colors duration-200 flex-shrink-0 min-w-[60px] sm:min-w-[70px] ${
                   isActive
                     ? 'text-emerald-600'
                     : theme.isDark
@@ -63,8 +64,8 @@ const Navigation: React.FC = () => {
                 }`
               }
             >
-              <item.icon className="h-5 w-5 mb-1" />
-              <span className="text-xs font-medium">{item.label}</span>
+              <item.icon className="h-4 w-4 sm:h-5 sm:w-5 mb-0.5 sm:mb-1" />
+              <span className="text-[0.6rem] sm:text-xs font-medium whitespace-nowrap">{item.label}</span>
             </NavLink>
           ))}
         </div>

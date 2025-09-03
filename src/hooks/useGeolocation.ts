@@ -34,10 +34,24 @@ export const useGeolocation = () => {
       });
     };
 
-    const errorHandler = () => {
+    const errorHandler = (error: GeolocationPositionError) => {
+      let errorMessage = 'Tidak dapat mengakses lokasi. Silakan masukkan kota secara manual.';
+      
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          errorMessage = 'Izin akses lokasi ditolak. Silakan aktifkan izin lokasi atau masukkan kota secara manual.';
+          break;
+        case error.POSITION_UNAVAILABLE:
+          errorMessage = 'Informasi lokasi tidak tersedia. Silakan masukkan kota secara manual.';
+          break;
+        case error.TIMEOUT:
+          errorMessage = 'Waktu permintaan lokasi habis. Silakan coba lagi atau masukkan kota secara manual.';
+          break;
+      }
+      
       setState(prev => ({
         ...prev,
-        error: 'Tidak dapat mengakses lokasi. Silakan masukkan kota secara manual.',
+        error: errorMessage,
         loading: false,
       }));
     };

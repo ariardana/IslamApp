@@ -14,8 +14,8 @@ const Layout: React.FC = () => {
       <Header />
       <Navigation />
       
-      <main className="pt-16 pb-20 lg:pb-0 lg:pl-64">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+      <main className="pt-16 pb-16 sm:pb-20 lg:pb-0 lg:pl-64">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-3 sm:py-4 md:py-6 lg:py-8">
           <Outlet />
         </div>
       </main>

@@ -18,11 +18,13 @@ const SurahReader: React.FC = () => {
       currentAudio.pause();
     }
 
-    const audio = new Audio(`https://cdn.islamic.network/quran/audio/128/ar.alafasy/${surahNum}${ayahNum.toString().padStart(3, '0')}.mp3`);
+    // For now, we'll use surah-level audio as the new API doesn't provide ayah-level audio
+    // In a real implementation, we would need to find or implement ayah-level audio
+    const audio = new Audio(`https://santrikoding.com/storage/audio/${surahNum.toString().padStart(3, '0')}.mp3`);
     audio.onplay = () => setPlayingAyah(ayahNum);
     audio.onended = () => setPlayingAyah(null);
     audio.onerror = () => {
-      console.log('Audio not available for this ayah');
+      console.log('Audio not available for this surah');
       setPlayingAyah(null);
     };
     
@@ -73,7 +75,7 @@ const SurahReader: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-3 sm:space-x-4">
           <Link
             to="/"
             className={`p-2 rounded-lg transition-colors duration-200 ${
@@ -83,8 +85,8 @@ const SurahReader: React.FC = () => {
             <ArrowLeft className="h-6 w-6" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold">{surah?.name}</h1>
-            <p className={`text-sm ${theme.isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+            <h1 className="text-xl sm:text-2xl font-bold">{surah?.name}</h1>
+            <p className={`text-xs sm:text-sm ${theme.isDark ? 'text-gray-400' : 'text-gray-600'}`}>
               {surah?.englishNameTranslation} • {surah?.numberOfAyahs} ayat
             </p>
           </div>
@@ -101,38 +103,38 @@ const SurahReader: React.FC = () => {
           placeholder="Cari dalam surah ini..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className={`w-full pl-10 pr-4 py-3 rounded-lg border transition-colors duration-200 ${
+          className={`w-full pl-10 pr-4 py-2 sm:py-3 rounded-lg border transition-colors duration-200 ${
             theme.isDark
               ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-400'
               : 'bg-white border-gray-200 text-gray-900 placeholder-gray-500'
-          } focus:ring-2 focus:ring-emerald-500 focus:border-transparent`}
+          } focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm sm:text-base`}
         />
       </div>
 
       {/* Ayahs */}
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {(searchTerm ? filteredAyahs : surah?.ayahs)?.map((ayah: Ayah) => (
           <div
             key={ayah.numberInSurah}
-            className={`p-6 rounded-lg border transition-all duration-200 ${
+            className={`p-4 sm:p-6 rounded-lg border transition-all duration-200 ${
               theme.isDark
                 ? 'bg-gray-800 border-gray-700'
                 : 'bg-white border-gray-200'
             }`}
           >
             {/* Ayah Number and Controls */}
-            <div className="flex items-center justify-between mb-4">
-              <div className={`flex items-center justify-center w-8 h-8 rounded-full ${
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <div className={`flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full ${
                 theme.isDark ? 'bg-emerald-700' : 'bg-emerald-100'
               }`}>
-                <span className={`text-sm font-bold ${
+                <span className={`text-xs sm:text-sm font-bold ${
                   theme.isDark ? 'text-white' : 'text-emerald-700'
                 }`}>
                   {ayah.numberInSurah}
                 </span>
               </div>
               
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1 sm:space-x-2">
                 <button
                   onClick={() => {
                     if (playingAyah === ayah.numberInSurah) {
@@ -141,44 +143,42 @@ const SurahReader: React.FC = () => {
                       handleAudioPlay(Number(surahNumber), ayah.numberInSurah);
                     }
                   }}
-                  className={`p-2 rounded-lg transition-colors duration-200 ${
+                  className={`p-1.5 sm:p-2 rounded-lg transition-colors duration-200 ${
                     theme.isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'
                   }`}
                 >
                   {playingAyah === ayah.numberInSurah ? (
-                    <Pause className="h-5 w-5 text-emerald-600" />
+                    <Pause className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600" />
                   ) : (
-                    <Play className="h-5 w-5 text-emerald-600" />
+                    <Play className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600" />
                   )}
                 </button>
                 
                 <button
                   onClick={() => toggleBookmark(ayah)}
-                  className={`p-2 rounded-lg transition-colors duration-200 ${
+                  className={`p-1.5 sm:p-2 rounded-lg transition-colors duration-200 ${
                     theme.isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'
                   }`}
                 >
                   {isBookmarked(Number(surahNumber), ayah.numberInSurah) ? (
-                    <BookmarkCheck className="h-5 w-5 text-amber-500" />
+                    <BookmarkCheck className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500" />
                   ) : (
-                    <Bookmark className="h-5 w-5 text-gray-400" />
+                    <Bookmark className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
                   )}
                 </button>
               </div>
             </div>
 
             {/* Arabic Text */}
-            <div className="mb-4">
-              <p className="text-2xl leading-loose text-right font-arabic" dir="rtl">
+            <div className="mb-3 sm:mb-4">
+              <p className="text-xl sm:text-2xl leading-loose text-right font-arabic" dir="rtl">
                 {ayah.text}
               </p>
             </div>
 
             {/* Translation */}
-            <div className={`p-4 rounded-lg ${
-              theme.isDark ? 'bg-gray-700' : 'bg-gray-50'
-            }`}>
-              <p className="text-base leading-relaxed">
+            <div className={`p-3 sm:p-4 rounded-lg ${theme.isDark ? 'bg-gray-700' : 'bg-gray-50'}`}>
+              <p className="text-sm sm:text-base leading-relaxed">
                 {ayah.translation}
               </p>
             </div>

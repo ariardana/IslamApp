@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { AppState, BookmarkedAyah, NewsArticle } from '../types';
+import { AppState, BookmarkedAyah, NewsArticle, Prayer } from '../types';
 
 interface AppStore extends AppState {
   toggleTheme: () => void;
@@ -8,6 +8,8 @@ interface AppStore extends AppState {
   removeBookmarkedAyah: (surahNumber: number, ayahNumber: number) => void;
   addBookmarkedNews: (article: NewsArticle) => void;
   removeBookmarkedNews: (articleId: string) => void;
+  addBookmarkedPrayer: (prayer: Prayer) => void;
+  removeBookmarkedPrayer: (prayerId: string) => void;
   setLocation: (location: { city: string; latitude: number; longitude: number }) => void;
   togglePrayerNotifications: () => void;
 }
@@ -18,6 +20,7 @@ export const useAppStore = create<AppStore>()(
       theme: { isDark: false },
       bookmarkedAyahs: [],
       bookmarkedNews: [],
+      bookmarkedPrayers: [],
       currentLocation: null,
       prayerNotifications: true,
 
@@ -46,6 +49,16 @@ export const useAppStore = create<AppStore>()(
       removeBookmarkedNews: (articleId) =>
         set((state) => ({
           bookmarkedNews: state.bookmarkedNews.filter((article) => article.id !== articleId),
+        })),
+
+      addBookmarkedPrayer: (prayer) =>
+        set((state) => ({
+          bookmarkedPrayers: [...state.bookmarkedPrayers, prayer],
+        })),
+
+      removeBookmarkedPrayer: (prayerId) =>
+        set((state) => ({
+          bookmarkedPrayers: state.bookmarkedPrayers.filter((prayer) => prayer.id !== prayerId),
         })),
 
       setLocation: (location) =>

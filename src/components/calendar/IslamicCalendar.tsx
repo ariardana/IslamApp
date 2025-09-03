@@ -59,21 +59,21 @@ const IslamicCalendar: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <div className="flex items-center space-x-3">
-        <CalendarIcon className="h-8 w-8 text-emerald-600" />
-        <h1 className="text-2xl font-bold">Kalender Hijriah</h1>
+        <CalendarIcon className="h-6 w-6 sm:h-8 sm:w-8 text-emerald-600" />
+        <h1 className="text-xl sm:text-2xl font-bold">Kalender Hijriah</h1>
       </div>
 
       {/* Current Islamic Date */}
-      <div className={`p-4 rounded-lg border text-center ${
+      <div className={`p-3 sm:p-4 rounded-lg border text-center ${
         theme.isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
       }`}>
-        <p className="text-lg font-semibold text-emerald-600">
+        <p className="text-base sm:text-lg font-semibold text-emerald-600">
           Hari Ini: {islamicUtils.getCurrentIslamicDateInfo()}
         </p>
-        <p className={`text-sm ${theme.isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+        <p className={`text-xs sm:text-sm ${theme.isDark ? 'text-gray-400' : 'text-gray-600'}`}>
           {format(new Date(), 'EEEE, dd MMMM yyyy', { locale: id })}
         </p>
       </div>
@@ -82,42 +82,42 @@ const IslamicCalendar: React.FC = () => {
       <div className="flex items-center justify-between">
         <button
           onClick={() => setCurrentDate(subMonths(currentDate, 1))}
-          className={`p-2 rounded-lg transition-colors duration-200 ${
+          className={`p-1.5 sm:p-2 rounded-lg transition-colors duration-200 ${
             theme.isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
           }`}
         >
-          <ChevronLeft className="h-6 w-6" />
+          <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
         </button>
         
-        <h2 className="text-xl font-semibold">
+        <h2 className="text-lg sm:text-xl font-semibold">
           {format(currentDate, 'MMMM yyyy', { locale: id })}
         </h2>
         
         <button
           onClick={() => setCurrentDate(addMonths(currentDate, 1))}
-          className={`p-2 rounded-lg transition-colors duration-200 ${
+          className={`p-1.5 sm:p-2 rounded-lg transition-colors duration-200 ${
             theme.isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
           }`}
         >
-          <ChevronRight className="h-6 w-6" />
+          <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
         </button>
       </div>
 
       {/* Calendar Grid */}
-      <div className={`p-4 rounded-lg border ${
+      <div className={`p-3 sm:p-4 rounded-lg border ${
         theme.isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
       }`}>
         {/* Days of week header */}
-        <div className="grid grid-cols-7 gap-1 mb-4">
+        <div className="grid grid-cols-7 gap-0.5 sm:gap-1 mb-2 sm:mb-4">
           {['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'].map((day) => (
-            <div key={day} className="p-2 text-center font-medium text-emerald-600">
+            <div key={day} className="p-1 sm:p-2 text-center font-medium text-emerald-600 text-xs sm:text-sm">
               {day}
             </div>
           ))}
         </div>
 
         {/* Calendar days */}
-        <div className="grid grid-cols-7 gap-1">
+        <div className="grid grid-cols-7 gap-0.5 sm:gap-1">
           {calendarDays.map((day) => {
             const { isImportant, event } = isImportantDate(day);
             const today = isToday(day);
@@ -126,7 +126,7 @@ const IslamicCalendar: React.FC = () => {
             return (
               <div
                 key={day.toISOString()}
-                className={`relative p-2 h-16 rounded-lg transition-all duration-200 ${
+                className={`relative p-1 sm:p-2 rounded-lg transition-all duration-200 ${
                   today
                     ? 'bg-emerald-600 text-white'
                     : isImportant
@@ -137,12 +137,12 @@ const IslamicCalendar: React.FC = () => {
                 }`}
                 title={event}
               >
-                <div className="text-sm font-medium">{day.getDate()}</div>
-                <div className="text-xs opacity-80">
+                <div className="text-xs sm:text-sm font-medium text-center">{day.getDate()}</div>
+                <div className="text-[0.6rem] sm:text-xs opacity-80 text-center truncate">
                   {islamicUtils.gregorianToHijri(day).split(' ')[0]}
                 </div>
                 {isImportant && (
-                  <Star className="absolute top-1 right-1 h-3 w-3 text-amber-500" />
+                  <Star className="absolute top-0.5 right-0.5 h-2.5 w-2.5 sm:top-1 sm:right-1 sm:h-3 sm:w-3 text-amber-500" />
                 )}
               </div>
             );
@@ -151,28 +151,28 @@ const IslamicCalendar: React.FC = () => {
       </div>
 
       {/* Important Dates List */}
-      <div className={`p-4 rounded-lg border ${
+      <div className={`p-3 sm:p-4 rounded-lg border ${
         theme.isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
       }`}>
-        <h3 className="text-lg font-semibold mb-4 flex items-center">
-          <Star className="h-5 w-5 text-amber-500 mr-2" />
+        <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 flex items-center">
+          <Star className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500 mr-1.5 sm:mr-2" />
           Hari-Hari Penting Islam
         </h3>
         
-        <div className="space-y-3">
+        <div className="space-y-2 sm:space-y-3">
           {importantDates.map((date, index) => (
-            <div key={index} className={`p-3 rounded-lg ${
+            <div key={index} className={`p-2 sm:p-3 rounded-lg ${
               theme.isDark ? 'bg-gray-700' : 'bg-gray-50'
             }`}>
               <div className="flex justify-between items-start">
                 <div>
-                  <h4 className="font-medium text-amber-600">{date.event}</h4>
-                  <p className={`text-sm ${theme.isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <h4 className="font-medium text-amber-600 text-sm sm:text-base">{date.event}</h4>
+                  <p className={`text-xs sm:text-sm ${theme.isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                     {date.date}
                   </p>
                 </div>
               </div>
-              <p className={`text-sm mt-1 ${theme.isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+              <p className={`text-xs sm:text-sm mt-1 ${theme.isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                 {date.description}
               </p>
             </div>
@@ -181,28 +181,28 @@ const IslamicCalendar: React.FC = () => {
       </div>
 
       {/* Location Input Form */}
-      <div className={`p-4 rounded-lg border ${
+      <div className={`p-3 sm:p-4 rounded-lg border ${
         theme.isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
       }`}>
-        <h3 className="text-lg font-semibold mb-4">Ubah Lokasi</h3>
+        <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Ubah Lokasi</h3>
         
-        <form onSubmit={handleCitySubmit} className="space-y-3">
+        <form onSubmit={handleCitySubmit} className="space-y-2 sm:space-y-3">
           <input
             type="text"
             placeholder="Nama kota (contoh: Jakarta, Surabaya, Medan)"
             value={cityInput}
             onChange={(e) => setCityInput(e.target.value)}
-            className={`w-full px-3 py-2 rounded-lg border transition-colors duration-200 ${
+            className={`w-full px-2 py-1.5 sm:px-3 sm:py-2 rounded-lg border transition-colors duration-200 text-sm sm:text-base ${
               theme.isDark
                 ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400'
                 : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'
             } focus:ring-2 focus:ring-emerald-500 focus:border-transparent`}
           />
           
-          <div className="flex space-x-2">
+          <div className="flex flex-col sm:flex-row sm:space-x-2 space-y-2 sm:space-y-0">
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors duration-200"
+              className="flex-1 px-3 py-1.5 sm:px-4 sm:py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors duration-200 text-sm sm:text-base"
             >
               Atur Lokasi
             </button>
@@ -210,7 +210,7 @@ const IslamicCalendar: React.FC = () => {
               type="button"
               onClick={handleUseCurrentLocation}
               disabled={geolocation.loading}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-1.5 sm:px-4 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
             >
               Gunakan Lokasi Saat Ini
             </button>

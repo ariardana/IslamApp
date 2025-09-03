@@ -4,5 +4,18 @@ export default {
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [
+    function ({ addUtilities }) {
+      addUtilities({
+        '.hide-scrollbar': {
+          /* Hide scrollbar for Chrome, Safari and Opera */
+          '-ms-overflow-style': 'none', /* IE and Edge */
+          'scrollbar-width': 'none', /* Firefox */
+        },
+        '.hide-scrollbar::-webkit-scrollbar': {
+          'display': 'none',
+        },
+      });
+    },
+  ],
 };

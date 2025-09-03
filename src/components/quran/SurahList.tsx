@@ -31,8 +31,8 @@ const SurahList: React.FC = () => {
             }`}
           >
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+              <div className="flex items-center space-x-3 sm:space-x-4">
+                <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
                   theme.isDark ? 'bg-emerald-700' : 'bg-emerald-100'
                 }`}>
                   <span className={`text-sm font-bold ${
@@ -42,15 +42,15 @@ const SurahList: React.FC = () => {
                   </span>
                 </div>
                 
-                <div>
-                  <h3 className="font-semibold text-lg">{surah.name}</h3>
-                  <p className={`text-sm ${theme.isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                <div className="min-w-0">
+                  <h3 className="font-semibold text-base sm:text-lg truncate">{surah.name}</h3>
+                  <p className={`text-xs sm:text-sm ${theme.isDark ? 'text-gray-400' : 'text-gray-600'} truncate`}>
                     {surah.englishNameTranslation} • {surah.numberOfAyahs} ayat • {surah.revelationType}
                   </p>
                 </div>
               </div>
               
-              <ChevronRight className={`h-5 w-5 ${theme.isDark ? 'text-gray-400' : 'text-gray-400'}`} />
+              <ChevronRight className={`h-5 w-5 flex-shrink-0 ${theme.isDark ? 'text-gray-400' : 'text-gray-400'}`} />
             </div>
           </Link>
         ))}

@@ -5,6 +5,8 @@ export interface Surah {
   englishNameTranslation: string;
   numberOfAyahs: number;
   revelationType: string;
+  description?: string;
+  audio?: string;
 }
 
 export interface Ayah {
@@ -17,6 +19,8 @@ export interface Ayah {
   ruku: number;
   hizbQuarter: number;
   sajda: boolean;
+  translation?: string;
+  transliteration?: string;
 }
 
 export interface AyahTranslation {
@@ -124,10 +128,19 @@ export interface Theme {
   isDark: boolean;
 }
 
+export interface Prayer {
+  id: string;
+  doa: string;
+  ayat: string;
+  latin: string;
+  artinya: string;
+}
+
 export interface AppState {
   theme: Theme;
   bookmarkedAyahs: BookmarkedAyah[];
   bookmarkedNews: NewsArticle[];
+  bookmarkedPrayers: Prayer[];
   currentLocation: {
     city: string;
     latitude: number;
