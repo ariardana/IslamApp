@@ -11,11 +11,11 @@ export const apiDocs = {
       },
       "/api/quran/surahs/:number": {
         method: "GET",
-        description: "Get detailed information about a specific surah including all ayahs",
+        description: "Get detailed information about a specific surah including all ayahs with Arabic text and Indonesian translation",
         parameters: {
           number: "Surah number (1-114)"
         },
-        response: "Surah object with ayahs array"
+        response: "Surah object with ayahs array containing Arabic text, Indonesian translation, and audio URLs"
       }
     },
     "prayers": {

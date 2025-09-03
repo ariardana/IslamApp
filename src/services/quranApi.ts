@@ -1,84 +1,145 @@
 import axios from 'axios';
 import { Surah, Ayah } from '../types';
 
-const QURAN_API_BASE = 'https://quran-api.santrikoding.com/api';
+const QURAN_API_BASE = 'http://api.alquran.cloud/v1';
 
-// Interface for the new API response structure
-interface SantriSurah {
-  nomor: number;
-  nama: string;
-  nama_latin: string;
-  jumlah_ayat: number;
-  tempat_turun: string;
-  arti: string;
-  deskripsi: string;
-  audio: string;
+// Interface for the alquran.cloud API response structure
+interface AlQuranSurah {
+  number: number;
+  name: string;
+  englishName: string;
+  englishNameTranslation: string;
+  numberOfAyahs: number;
+  revelationType: string;
+  description?: string;
+  audio?: string;
 }
 
-interface SantriAyah {
-  id: number;
-  surah: number;
-  nomor: number;
-  ar: string;
-  tr: string;
-  idn: string;
+interface AlQuranAyah {
+  number: number;
+  text: string;
+  numberInSurah: number;
+  juz: number;
+  manzil: number;
+  page: number;
+  ruku: number;
+  hizbQuarter: number;
+  sajda: boolean;
+  audio?: string;
+  audioSecondary?: string[];
 }
 
-interface SantriSurahDetail extends SantriSurah {
-  ayat: SantriAyah[];
+interface AlQuranSurahDetail {
+  code: number;
+  status: string;
+  data: {
+    number: number;
+    name: string;
+    englishName: string;
+    englishNameTranslation: string;
+    revelationType: string;
+    numberOfAyahs: number;
+    ayahs: AlQuranAyah[];
+    edition: {
+      identifier: string;
+      language: string;
+      name: string;
+      englishName: string;
+      format: string;
+      type: string;
+    };
+  };
+}
+
+interface AlQuranSurahList {
+  code: number;
+  status: string;
+  data: AlQuranSurah[];
 }
 
 export const quranApi = {
   // Get all surahs
   getSurahs: async (): Promise<Surah[]> => {
-    const response = await axios.get<SantriSurah[]>(`${QURAN_API_BASE}/surah`);
-    return response.data.map(surah => ({
-      number: surah.nomor,
-      name: surah.nama,
-      englishName: surah.nama_latin,
-      englishNameTranslation: surah.arti,
-      numberOfAyahs: surah.jumlah_ayat,
-      revelationType: surah.tempat_turun,
-      description: surah.deskripsi,
+    const response = await axios.get<AlQuranSurahList>(`${QURAN_API_BASE}/surah`);
+    return response.data.data.map(surah => ({
+      number: surah.number,
+      name: surah.name,
+      englishName: surah.englishName,
+      englishNameTranslation: surah.englishNameTranslation,
+      numberOfAyahs: surah.numberOfAyahs,
+      revelationType: surah.revelationType,
+      description: surah.description,
       audio: surah.audio,
     }));
   },
 
-  // Get specific surah with ayahs
+  // Get specific surah with ayahs (Arabic text)
   getSurah: async (surahNumber: number): Promise<any> => {
-    const response = await axios.get<SantriSurahDetail>(`${QURAN_API_BASE}/surah/${surahNumber}`);
+    const response = await axios.get<AlQuranSurahDetail>(`${QURAN_API_BASE}/surah/${surahNumber}/quran-uthmani`);
     
-    // Map the response to match expected structure
     return {
-      number: response.data.nomor,
-      name: response.data.nama,
-      englishName: response.data.nama_latin,
-      englishNameTranslation: response.data.arti,
-      numberOfAyahs: response.data.jumlah_ayat,
-      revelationType: response.data.tempat_turun,
-      description: response.data.deskripsi,
-      audio: response.data.audio,
-      ayahs: response.data.ayat.map(ayah => ({
-        number: ayah.id,
-        text: ayah.ar,
-        numberInSurah: ayah.nomor,
-        translation: ayah.idn,
-        juz: 0,
-        manzil: 0,
-        page: 0,
-        ruku: 0,
-        hizbQuarter: 0,
-        sajda: false,
+      number: response.data.data.number,
+      name: response.data.data.name,
+      englishName: response.data.data.englishName,
+      englishNameTranslation: response.data.data.englishNameTranslation,
+      numberOfAyahs: response.data.data.numberOfAyahs,
+      revelationType: response.data.data.revelationType,
+      description: response.data.data.description,
+      audio: response.data.data.ayahs[0]?.audio, // Surah audio from first ayah
+      ayahs: response.data.data.ayahs.map(ayah => ({
+        number: ayah.number,
+        text: ayah.text,
+        numberInSurah: ayah.numberInSurah,
+        juz: ayah.juz,
+        manzil: ayah.manzil,
+        page: ayah.page,
+        ruku: ayah.ruku,
+        hizbQuarter: ayah.hizbQuarter,
+        sajda: ayah.sajda,
+        audio: ayah.audio,
       })),
     };
   },
 
-  // Get surah with Indonesian translation (same as getSurah now since new API includes translation)
+  // Get surah with Indonesian translation and Latin transliteration
   getSurahWithTranslation: async (surahNumber: number): Promise<any> => {
-    return await quranApi.getSurah(surahNumber);
+    // First get the Arabic text
+    const arabicResponse = await axios.get<AlQuranSurahDetail>(`${QURAN_API_BASE}/surah/${surahNumber}/quran-uthmani`);
+    
+    // Then get the Indonesian translation
+    const translationResponse = await axios.get<AlQuranSurahDetail>(`${QURAN_API_BASE}/surah/${surahNumber}/id.indonesian`);
+    
+    // Then get the English transliteration
+    const transliterationResponse = await axios.get<AlQuranSurahDetail>(`${QURAN_API_BASE}/surah/${surahNumber}/en.transliteration`);
+    
+    // Merge the data
+    return {
+      number: arabicResponse.data.data.number,
+      name: arabicResponse.data.data.name,
+      englishName: arabicResponse.data.data.englishName,
+      englishNameTranslation: arabicResponse.data.data.englishNameTranslation,
+      numberOfAyahs: arabicResponse.data.data.numberOfAyahs,
+      revelationType: arabicResponse.data.data.revelationType,
+      description: arabicResponse.data.data.description,
+      audio: arabicResponse.data.data.ayahs[0]?.audio,
+      ayahs: arabicResponse.data.data.ayahs.map((ayah, index) => ({
+        number: ayah.number,
+        text: ayah.text,
+        numberInSurah: ayah.numberInSurah,
+        juz: ayah.juz,
+        manzil: ayah.manzil,
+        page: ayah.page,
+        ruku: ayah.ruku,
+        hizbQuarter: ayah.hizbQuarter,
+        sajda: ayah.sajda,
+        audio: ayah.audio,
+        translation: translationResponse.data.data.ayahs[index]?.text || '',
+        transliteration: transliterationResponse.data.data.ayahs[index]?.text || '',
+      })),
+    };
   },
 
-  // Search ayahs (not available in new API, so we'll implement a simple search in the frontend)
+  // Search ayahs (simple implementation - fetch surah and search within it)
   searchAyahs: async (query: string): Promise<any> => {
     // For now, we'll return an empty result since search is not available in the new API
     // We'll need to implement search functionality in the frontend by fetching all surahs
@@ -86,15 +147,15 @@ export const quranApi = {
     return [];
   },
 
-  // Get Juz (not available in new API)
+  // Get Juz (not directly available, so we'll implement by getting all surahs in a juz)
   getJuz: async (juzNumber: number): Promise<any> => {
-    // Not available in the new API, so we return an empty result
+    // Not directly available in the new API, so we return an empty result
     return {};
   },
 
-  // Get audio for ayah (using the surah audio as fallback since ayah-level audio is not available)
-  getAyahAudio: (surahNumber: number, ayahNumber: number): string => {
-    // Return surah-level audio since ayah-level audio is not available in the API response
-    return `https://santrikoding.com/storage/audio/${surahNumber.toString().padStart(3, '0')}.mp3`;
+  // Get audio for ayah
+  getAyahAudio: (ayahAudioUrl: string): string => {
+    // Return the audio URL directly from the API
+    return ayahAudioUrl || '';
   }
 };

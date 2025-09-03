@@ -13,26 +13,31 @@ const SurahReader: React.FC = () => {
   const [playingAyah, setPlayingAyah] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const handleAudioPlay = (surahNum: number, ayahNum: number) => {
+  const handleAudioPlay = (ayahAudioUrl: string, ayahNum: number) => {
     if (currentAudio) {
       currentAudio.pause();
     }
 
-    // For now, we'll use surah-level audio as the new API doesn't provide ayah-level audio
-    // In a real implementation, we would need to find or implement ayah-level audio
-    const audio = new Audio(`https://santrikoding.com/storage/audio/${surahNum.toString().padStart(3, '0')}.mp3`);
-    audio.onplay = () => setPlayingAyah(ayahNum);
-    audio.onended = () => setPlayingAyah(null);
-    audio.onerror = () => {
-      console.log('Audio not available for this surah');
+    // Use the ayah-level audio URL from the new API
+    if (ayahAudioUrl) {
+      const audio = new Audio(ayahAudioUrl);
+      audio.onplay = () => setPlayingAyah(ayahNum);
+      audio.onended = () => setPlayingAyah(null);
+      audio.onerror = (e) => {
+        console.error('Audio playback error:', e);
+        console.log('Audio URL:', ayahAudioUrl);
+        setPlayingAyah(null);
+      };
+      
+      setCurrentAudio(audio);
+      audio.play().catch((error) => {
+        console.error('Could not play audio:', error);
+        setPlayingAyah(null);
+      });
+    } else {
+      console.log('No audio URL available for this ayah');
       setPlayingAyah(null);
-    };
-    
-    setCurrentAudio(audio);
-    audio.play().catch(() => {
-      console.log('Could not play audio');
-      setPlayingAyah(null);
-    });
+    }
   };
 
   const handleAudioPause = () => {
@@ -140,7 +145,7 @@ const SurahReader: React.FC = () => {
                     if (playingAyah === ayah.numberInSurah) {
                       handleAudioPause();
                     } else {
-                      handleAudioPlay(Number(surahNumber), ayah.numberInSurah);
+                      handleAudioPlay(ayah.audio || '', ayah.numberInSurah);
                     }
                   }}
                   className={`p-1.5 sm:p-2 rounded-lg transition-colors duration-200 ${
@@ -175,6 +180,15 @@ const SurahReader: React.FC = () => {
                 {ayah.text}
               </p>
             </div>
+
+            {/* Latin Transliteration */}
+            {ayah.transliteration && (
+              <div className={`p-3 sm:p-4 rounded-lg ${theme.isDark ? 'bg-gray-700' : 'bg-gray-50'} mb-3`}>
+                <p className="text-sm sm:text-base leading-relaxed italic">
+                  {ayah.transliteration}
+                </p>
+              </div>
+            )}
 
             {/* Translation */}
             <div className={`p-3 sm:p-4 rounded-lg ${theme.isDark ? 'bg-gray-700' : 'bg-gray-50'}`}>
