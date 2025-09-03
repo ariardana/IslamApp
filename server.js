@@ -352,9 +352,15 @@ app.use('/api', (req, res) => {
   res.status(404).json({ error: 'API endpoint not found' });
 });
 
-// Handle 404 for API routes
-app.use('/api/*', (req, res) => {
-  res.status(404).json({ error: 'API endpoint not found' });
+// Handle 404 for all routes
+app.use((req, res) => {
+  // If the request path starts with /api/, return JSON error
+  if (req.path.startsWith('/api/')) {
+    res.status(404).json({ error: 'API endpoint not found' });
+  } else {
+    // For non-API routes, return a simple not found message
+    res.status(404).send('Not Found');
+  }
 });
 
 // Export for Vercel serverless functions
