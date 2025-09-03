@@ -16,6 +16,9 @@ app.use(cors());
 // Parse JSON bodies
 app.use(express.json());
 
+// Serve static files from the public directory
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Logging middleware
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
