@@ -4,18 +4,20 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"vite\" \"node server.js\"",
-    "build": "tsc && vite build",
+    "dev": "npm run copy-prayers && concurrently \"vite\" \"node server.js\"",
+    "build": "npm run copy-prayers && tsc && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "server": "node server.js",
-    "dev:proxy": "concurrently \"vite\" \"node server.js\"",
-    "start": "concurrently \"vite\" \"node server.js\"",
-    "vercel-build": "npm run build"
+    "dev:proxy": "npm run copy-prayers && concurrently \"vite\" \"node server.js\"",
+    "start": "npm run copy-prayers && concurrently \"vite\" \"node server.js\"",
+    "vercel-build": "npm run build",
+    "copy-prayers": "node copyPrayersToPublic.js"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.85.6",
     "axios": "^1.11.0",
+    "cheerio": "^1.1.2",
     "cors": "^2.8.5",
     "date-fns": "^4.1.0",
     "date-fns-jalali": "^4.1.0-0",

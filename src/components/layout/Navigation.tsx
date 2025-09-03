@@ -10,7 +10,7 @@ const Navigation: React.FC = () => {
     { to: '/', icon: Book, label: 'Al-Qur\'an' },
     { to: '/prayer-times', icon: Clock, label: 'Jadwal Sholat' },
     { to: '/calendar', icon: Calendar, label: 'Kalender' },
-    { to: '/prayers', icon: BookOpen, label: 'Kumpulan Doa' },
+    { to: '/doa', icon: BookOpen, label: 'Kumpulan Doa' },
     { to: '/bookmarks', icon: Bookmark, label: 'Bookmark' },
     { to: '/api-docs', icon: FileText, label: 'API Docs' },
   ];

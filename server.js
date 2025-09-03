@@ -3,6 +3,7 @@ import cors from 'cors';
 import axios from 'axios';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { promises as fs } from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -108,35 +109,52 @@ app.get('/api/docs', (req, res) => {
   });
 });
 
-// Proxy endpoint for prayer API
+// Endpoint for prayer API - serving from local data
 app.get('/api/prayers', async (req, res) => {
   try {
-    const response = await axios.get('https://doa-doa-api-ahmadramadhan.fly.dev/api');
-    res.json(response.data);
+    const doaData = await fs.readFile(path.join(__dirname, 'src/data/doa.json'), 'utf8');
+    const prayers = JSON.parse(doaData);
+    res.json(prayers);
   } catch (error) {
-    console.error('Error fetching prayers:', error);
-    res.status(500).json({ error: 'Failed to fetch prayers' });
+    console.error('Error reading prayers data:', error);
+    res.status(500).json({ error: 'Failed to read prayers data' });
   }
 });
 
-// Proxy endpoint for searching prayers
+// Endpoint for searching prayers - working with local data
 app.get('/api/prayers/search', async (req, res) => {
   try {
     const { q } = req.query;
-    const response = await axios.get(`https://doa-doa-api-ahmadramadhan.fly.dev/api?title=${encodeURIComponent(q)}`);
-    res.json(response.data);
+    const doaData = await fs.readFile(path.join(__dirname, 'src/data/doa.json'), 'utf8');
+    const prayers = JSON.parse(doaData);
+    
+    // Filter prayers based on the search query
+    const filteredPrayers = prayers.filter(prayer => 
+      prayer.title.toLowerCase().includes(q.toLowerCase())
+    );
+    
+    res.json(filteredPrayers);
   } catch (error) {
     console.error('Error searching prayers:', error);
     res.status(500).json({ error: 'Failed to search prayers' });
   }
 });
 
-// Proxy endpoint for getting a specific prayer
+// Endpoint for getting a specific prayer by ID - working with local data
 app.get('/api/prayers/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const response = await axios.get(`https://doa-doa-api-ahmadramadhan.fly.dev/api/${id}`);
-    res.json(response.data[0]);
+    const doaData = await fs.readFile(path.join(__dirname, 'src/data/doa.json'), 'utf8');
+    const prayers = JSON.parse(doaData);
+    
+    // Find the prayer with the matching ID
+    const prayer = prayers.find(p => p.id === id);
+    
+    if (!prayer) {
+      return res.status(404).json({ error: 'Prayer not found' });
+    }
+    
+    res.json(prayer);
   } catch (error) {
     console.error(`Error fetching prayer ${req.params.id}:`, error);
     res.status(500).json({ error: 'Failed to fetch prayer' });
@@ -147,7 +165,7 @@ app.get('/api/prayers/:id', async (req, res) => {
 app.get('/api/quran/surahs', async (req, res) => {
   try {
     console.log('Proxying request to equran.id API for surahs - USING EQURAN.ID API');
-    const apiUrl = process.env.VITE_API_BASE_URL || 'https://equran.id/api/v2';
+    const apiUrl = process.env.API_BASE_URL || 'https://equran.id/api/v2';
     const response = await axios.get(`${apiUrl}/surat`);
     
     // Transform the response to match our application's expected format
@@ -182,7 +200,7 @@ app.get('/api/quran/surahs/:number', async (req, res) => {
   try {
     const { number } = req.params;
     console.log(`Proxying request to equran.id API for surah ${number}`);
-    const apiUrl = process.env.VITE_API_BASE_URL || 'https://equran.id/api/v2';
+    const apiUrl = process.env.API_BASE_URL || 'https://equran.id/api/v2';
     const response = await axios.get(`${apiUrl}/surat/${number}`);
     
     // Log response for debugging

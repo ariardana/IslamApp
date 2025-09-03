@@ -9,8 +9,11 @@ import SurahReader from './components/quran/SurahReader';
 import PrayerTimes from './components/prayer/PrayerTimes';
 import IslamicCalendar from './components/calendar/IslamicCalendar';
 import PrayerList from './components/prayer-collection/PrayerList';
+import PrayerDetail from './components/prayer-collection/PrayerDetail';
 import BookmarksList from './components/bookmarks/BookmarksList';
 import ApiDocs from './components/api-docs/ApiDocs';
+import DoaList from './components/prayer-collection/DoaList';
+import DoaDetail from './components/prayer-collection/DoaDetail';
 import { useAppStore } from './store/useAppStore';
 
 const queryClient = new QueryClient({
@@ -37,6 +40,9 @@ function App() {
               <Route path="prayer-times" element={<PrayerTimes />} />
               <Route path="calendar" element={<IslamicCalendar />} />
               <Route path="prayers" element={<PrayerList />} />
+              <Route path="prayers/:id" element={<PrayerDetail />} />
+              <Route path="doa" element={<DoaList />} />
+              <Route path="doa/:id" element={<DoaDetail />} />
               <Route path="bookmarks" element={<BookmarksList />} />
               <Route path="api-docs" element={<ApiDocs />} />
             </Route>

@@ -145,10 +145,10 @@ export interface Theme {
 
 export interface Prayer {
   id: string;
-  doa: string;
-  ayat: string;
+  title: string;
+  arabic: string;
   latin: string;
-  artinya: string;
+  translation: string;
 }
 
 export interface AppState {

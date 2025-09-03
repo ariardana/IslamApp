@@ -2,55 +2,66 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Heart, HeartOff, Share2, BookOpen } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import { prayerApi } from '../../services/prayerApi';
 import { useAppStore } from '../../store/useAppStore';
 import LoadingSpinner from '../common/LoadingSpinner';
 import { Prayer } from '../../types';
 
-const PrayerList: React.FC = () => {
+// Function to get static doa data
+const getStaticDoa = async (): Promise<Prayer[]> => {
+  const response = await fetch('/src/data/doa.json');
+  const doa = await response.json();
+  return doa;
+};
+
+// Function to search static doa data
+const searchStaticDoa = async (query: string): Promise<Prayer[]> => {
+  const response = await fetch('/src/data/doa.json');
+  const doa = await response.json();
+  return doa.filter((d: Prayer) => 
+    d.title.toLowerCase().includes(query.toLowerCase()) ||
+    d.translation.toLowerCase().includes(query.toLowerCase())
+  );
+};
+
+const DoaList: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const { theme, bookmarkedPrayers, addBookmarkedPrayer, removeBookmarkedPrayer } = useAppStore();
   
-  const { data: allPrayers, isLoading, error } = useQuery({
-    queryKey: ['prayers'],
-    queryFn: () => prayerApi.getAllPrayers(),
+  const { data: allDoa, isLoading, error } = useQuery({
+    queryKey: ['doa'],
+    queryFn: () => getStaticDoa(),
     staleTime: 300000, // 5 minutes
     retry: 2, // Retry failed requests up to 2 times
   });
 
   const { data: searchResults, isFetching: isSearching } = useQuery({
-    queryKey: ['prayers', searchQuery],
-    queryFn: () => prayerApi.searchPrayers(searchQuery),
+    queryKey: ['doa', searchQuery],
+    queryFn: () => searchStaticDoa(searchQuery),
     enabled: searchQuery.length > 0,
     staleTime: 300000, // 5 minutes
     retry: 2, // Retry failed requests up to 2 times
   });
 
-  const prayersToShow = searchQuery.length > 0 ? searchResults : allPrayers;
-  const isBookmarked = (prayerId: string): boolean => {
-    return bookmarkedPrayers.some(prayer => prayer.id === prayerId);
+  const doaToShow = searchQuery.length > 0 ? searchResults : allDoa;
+  const isBookmarked = (doaId: string): boolean => {
+    return bookmarkedPrayers.some(doa => doa.id === doaId);
   };
 
-  const toggleBookmark = (prayer: Prayer) => {
-    if (isBookmarked(prayer.id)) {
-      removeBookmarkedPrayer(prayer.id);
+  const toggleBookmark = (doa: Prayer) => {
+    if (isBookmarked(doa.id)) {
+      removeBookmarkedPrayer(doa.id);
     } else {
-      addBookmarkedPrayer(prayer);
+      addBookmarkedPrayer(doa);
     }
   };
 
-  const handleShare = async (prayer: Prayer) => {
-    const shareText = `${prayer.title}
-
-${prayer.arabic}
-${prayer.latin}
-
-Artinya: ${prayer.translation}`;
+  const handleShare = async (doa: Prayer) => {
+    const shareText = `${doa.title}\n\n${doa.arabic}\n${doa.latin}\n\nArtinya: ${doa.translation}`;
     
     if (navigator.share) {
       try {
         await navigator.share({
-          title: prayer.doa,
+          title: doa.title,
           text: shareText,
         });
       } catch (error) {
@@ -90,12 +101,12 @@ Artinya: ${prayer.translation}`;
         />
       </div>
 
-      {/* Prayers */}
+      {/* Doa */}
       <div className="space-y-3 sm:space-y-4">
-        {prayersToShow?.map((prayer) => (
+        {doaToShow?.map((doa) => (
           <Link
-            to={`/prayers/${prayer.id}`}
-            key={prayer.id}
+            to={`/doa/${doa.id}`}
+            key={doa.id}
             className={`block p-4 sm:p-6 rounded-lg border transition-all duration-200 hover:shadow-md ${
               theme.isDark
                 ? 'bg-gray-800 border-gray-700 hover:bg-gray-750'
@@ -103,18 +114,18 @@ Artinya: ${prayer.translation}`;
             }`}
           >
             <div className="flex items-start justify-between mb-2 sm:mb-3">
-              <h2 className="text-base sm:text-lg font-semibold">{prayer.title}</h2>
+              <h2 className="text-base sm:text-lg font-semibold">{doa.title}</h2>
               <div className="flex items-center space-x-1 sm:space-x-2">
                 <button
                   onClick={(e) => {
                     e.preventDefault();
-                    toggleBookmark(prayer);
+                    toggleBookmark(doa);
                   }}
                   className={`p-1 sm:p-1.5 rounded-lg transition-colors duration-200 ${
                     theme.isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'
                   }`}
                 >
-                  {isBookmarked(prayer.id) ? (
+                  {isBookmarked(doa.id) ? (
                     <HeartOff className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500" />
                   ) : (
                     <Heart className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
@@ -124,7 +135,7 @@ Artinya: ${prayer.translation}`;
                 <button
                   onClick={(e) => {
                     e.preventDefault();
-                    handleShare(prayer);
+                    handleShare(doa);
                   }}
                   className={`p-1 sm:p-1.5 rounded-lg transition-colors duration-200 ${
                     theme.isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'
@@ -137,17 +148,17 @@ Artinya: ${prayer.translation}`;
 
             {/* Arabic Text */}
             <div className={`text-xl sm:text-2xl leading-loose text-right mb-3 sm:mb-4 ${theme.isDark ? 'text-gray-200' : 'text-gray-800'}`}>
-              {prayer.arabic}
+              {doa.arabic}
             </div>
 
             {/* Latin */}
             <div className={`text-xs sm:text-sm italic mb-2 ${theme.isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-              {prayer.latin}
+              {doa.latin}
             </div>
 
             {/* Translation */}
             <div className={`text-xs sm:text-sm ${theme.isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-              <span className="font-medium">Artinya:</span> {prayer.translation}
+              <span className="font-medium">Artinya:</span> {doa.translation}
             </div>
           </Link>
         ))}
@@ -161,7 +172,7 @@ Artinya: ${prayer.translation}`;
       )}
 
       {/* Empty state */}
-      {!isLoading && !isSearching && prayersToShow?.length === 0 && searchQuery.length > 0 && (
+      {!isLoading && !isSearching && doaToShow?.length === 0 && searchQuery.length > 0 && (
         <div className="text-center py-6 sm:py-8">
           <p className={`text-base sm:text-lg ${theme.isDark ? 'text-gray-400' : 'text-gray-500'}`}>
             Tidak ditemukan doa dengan kata kunci "{searchQuery}"
@@ -193,4 +204,4 @@ Artinya: ${prayer.translation}`;
   );
 };
 
-export default PrayerList;
+export default DoaList;

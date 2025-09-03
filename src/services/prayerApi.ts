@@ -34,22 +34,25 @@ apiClient.interceptors.response.use(
 
 // Function to get static prayer data
 const getStaticPrayers = async (): Promise<Prayer[]> => {
-  const { prayers } = await import('../data/prayers');
+  const response = await fetch('/data/prayers.json');
+  const prayers = await response.json();
   return prayers;
 };
 
 // Function to search static prayer data
 const searchStaticPrayers = async (query: string): Promise<Prayer[]> => {
-  const { prayers } = await import('../data/prayers');
+  const response = await fetch('/data/prayers.json');
+  const prayers = await response.json();
   return prayers.filter(prayer => 
-    prayer.doa.toLowerCase().includes(query.toLowerCase()) ||
-    prayer.artinya.toLowerCase().includes(query.toLowerCase())
+    prayer.title.toLowerCase().includes(query.toLowerCase()) ||
+    prayer.translation.toLowerCase().includes(query.toLowerCase())
   );
 };
 
 // Function to get a specific static prayer by ID
 const getStaticPrayerById = async (id: string): Promise<Prayer> => {
-  const { prayers } = await import('../data/prayers');
+  const response = await fetch('/data/prayers.json');
+  const prayers = await response.json();
   const prayer = prayers.find(p => p.id === id);
   if (!prayer) {
     throw new Error('Prayer not found');
@@ -61,93 +64,33 @@ export const prayerApi = {
   // Get all prayers
   getAllPrayers: async (): Promise<Prayer[]> => {
     try {
-      // In development, use the API proxy
-      if (import.meta.env.DEV) {
-        const response = await apiClient.get('/prayers');
-        return response.data;
-      } else {
-        // In production, use static data
-        return getStaticPrayers();
-      }
+      // Always use static data
+      return getStaticPrayers();
     } catch (error: any) {
       console.error('Error fetching prayers:', error);
-      if (import.meta.env.DEV) {
-        if (error.response?.status === 404) {
-          throw new Error('API tidak ditemukan');
-        } else if (error.response?.status === 500) {
-          throw new Error('Server API sedang bermasalah');
-        } else if (error.code === 'ECONNABORTED') {
-          throw new Error('Waktu koneksi habis. Silakan coba lagi.');
-        } else if (error.message?.includes('Network Error')) {
-          throw new Error('Koneksi terputus. Periksa koneksi internet Anda.');
-        }
-        throw new Error('Gagal mengambil kumpulan doa. Silakan coba lagi.');
-      } else {
-        // In production, fallback to static data
-        return getStaticPrayers();
-      }
+      throw new Error('Gagal mengambil kumpulan doa. Silakan coba lagi.');
     }
   },
 
   // Get prayer by ID
   getPrayerById: async (id: string): Promise<Prayer> => {
     try {
-      // In development, use the API proxy
-      if (import.meta.env.DEV) {
-        const response = await apiClient.get(`/prayers/${id}`);
-        return response.data;
-      } else {
-        // In production, use static data
-        return getStaticPrayerById(id);
-      }
+      // Always use static data
+      return getStaticPrayerById(id);
     } catch (error: any) {
       console.error(`Error fetching prayer with ID ${id}:`, error);
-      if (import.meta.env.DEV) {
-        if (error.response?.status === 404) {
-          throw new Error('Doa tidak ditemukan');
-        } else if (error.response?.status === 500) {
-          throw new Error('Server API sedang bermasalah');
-        } else if (error.code === 'ECONNABORTED') {
-          throw new Error('Waktu koneksi habis. Silakan coba lagi.');
-        } else if (error.message?.includes('Network Error')) {
-          throw new Error('Koneksi terputus. Periksa koneksi internet Anda.');
-        }
-        throw new Error('Gagal mengambil detail doa. Silakan coba lagi.');
-      } else {
-        // In production, fallback to static data
-        return getStaticPrayerById(id);
-      }
+      throw new Error('Gagal mengambil detail doa. Silakan coba lagi.');
     }
   },
 
   // Search prayers by title
   searchPrayers: async (query: string): Promise<Prayer[]> => {
     try {
-      // In development, use the API proxy
-      if (import.meta.env.DEV) {
-        const response = await apiClient.get(`/prayers/search?q=${encodeURIComponent(query)}`);
-        return response.data;
-      } else {
-        // In production, use static data
-        return searchStaticPrayers(query);
-      }
+      // Always use static data
+      return searchStaticPrayers(query);
     } catch (error: any) {
       console.error(`Error searching prayers with query "${query}":`, error);
-      if (import.meta.env.DEV) {
-        if (error.response?.status === 404) {
-          throw new Error('API tidak ditemukan');
-        } else if (error.response?.status === 500) {
-          throw new Error('Server API sedang bermasalah');
-        } else if (error.code === 'ECONNABORTED') {
-          throw new Error('Waktu koneksi habis. Silakan coba lagi.');
-        } else if (error.message?.includes('Network Error')) {
-          throw new Error('Koneksi terputus. Periksa koneksi internet Anda.');
-        }
-        throw new Error('Gagal mencari doa. Silakan coba lagi.');
-      } else {
-        // In production, fallback to static data
-        return searchStaticPrayers(query);
-      }
+      throw new Error('Gagal mencari doa. Silakan coba lagi.');
     }
   }
 };
