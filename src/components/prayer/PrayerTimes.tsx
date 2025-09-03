@@ -37,7 +37,7 @@ const PrayerTimes: React.FC = () => {
   // Auto-detect location
   useEffect(() => {
     if (!currentLocation) {
-      if (geolocation.latitude && geolocation.longitude) {
+      if (geolocation.latitude !== null && geolocation.longitude !== null) {
         setLocation({
           city: 'Lokasi Saat Ini',
           latitude: geolocation.latitude,
@@ -69,7 +69,7 @@ const PrayerTimes: React.FC = () => {
   };
 
   const handleUseCurrentLocation = () => {
-    if (geolocation.latitude && geolocation.longitude) {
+    if (geolocation.latitude !== null && geolocation.longitude !== null) {
       setLocation({
         city: 'Lokasi Saat Ini',
         latitude: geolocation.latitude,
@@ -142,7 +142,7 @@ const PrayerTimes: React.FC = () => {
             <button
               type="button"
               onClick={handleUseCurrentLocation}
-              disabled={geolocation.loading || (!geolocation.latitude && !geolocation.longitude)}
+              disabled={geolocation.loading || (geolocation.latitude === null && geolocation.longitude === null)}
               className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <NavigationIcon className="h-4 w-4 sm:h-5 sm:w-5" />

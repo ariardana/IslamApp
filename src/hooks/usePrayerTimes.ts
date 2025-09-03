@@ -9,8 +9,8 @@ export const usePrayerTimes = () => {
     queryKey: ['prayerTimes', currentLocation],
     queryFn: async () => {
       try {
-        // Check if we have valid coordinates (not NaN and not zero)
-        if (currentLocation?.latitude && currentLocation?.longitude && 
+        // Check if we have valid coordinates (not null and not NaN)
+        if (currentLocation?.latitude !== null && currentLocation?.longitude !== null && 
             !isNaN(currentLocation.latitude) && !isNaN(currentLocation.longitude)) {
           return await prayerTimesApi.getPrayerTimesByCoordinates(
             currentLocation.latitude,
