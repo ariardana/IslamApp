@@ -34,30 +34,20 @@ apiClient.interceptors.response.use(
 
 // Function to get static prayer data
 const getStaticPrayers = async (): Promise<Prayer[]> => {
-  const response = await fetch('/data/doa.json');
-  const prayers = await response.json();
-  return prayers;
+  const response = await apiClient.get<Prayer[]>('/prayers');
+  return response.data;
 };
 
 // Function to search static prayer data
 const searchStaticPrayers = async (query: string): Promise<Prayer[]> => {
-  const response = await fetch('/data/doa.json');
-  const prayers = await response.json();
-  return prayers.filter(prayer => 
-    prayer.title.toLowerCase().includes(query.toLowerCase()) ||
-    prayer.translation.toLowerCase().includes(query.toLowerCase())
-  );
+  const response = await apiClient.get<Prayer[]>(`/prayers/search?q=${query}`);
+  return response.data;
 };
 
 // Function to get a specific static prayer by ID
 const getStaticPrayerById = async (id: string): Promise<Prayer> => {
-  const response = await fetch('/data/doa.json');
-  const prayers = await response.json();
-  const prayer = prayers.find(p => p.id === id);
-  if (!prayer) {
-    throw new Error('Prayer not found');
-  }
-  return prayer;
+  const response = await apiClient.get<Prayer>(`/prayers/${id}`);
+  return response.data;
 };
 
 export const prayerApi = {
