@@ -27,19 +27,25 @@ const ApiDocs: React.FC = () => {
     const fetchApiDocs = async () => {
       try {
         setLoading(true);
-        // Check if we're in development mode (where the proxy server is available)
-        if (import.meta.env.DEV) {
-          const response = await fetch('/api/docs');
+        // Try to fetch from the API endpoint first
+        const response = await fetch('/api/docs');
+        if (response.ok) {
           const data: ApiDocsData = await response.json();
           setApiDocs(data);
         } else {
-          // In production, use static data
+          // If API endpoint fails, use static data
           const { apiDocs } = await import('../../data/apiDocs');
           setApiDocs(apiDocs);
         }
       } catch (err) {
-        setError('Failed to load API documentation');
-        console.error('Error fetching API docs:', err);
+        // If fetch fails, use static data as fallback
+        try {
+          const { apiDocs } = await import('../../data/apiDocs');
+          setApiDocs(apiDocs);
+        } catch (staticErr) {
+          setError('Failed to load API documentation');
+          console.error('Error fetching API docs:', err);
+        }
       } finally {
         setLoading(false);
       }

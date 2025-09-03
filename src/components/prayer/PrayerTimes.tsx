@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, Clock, Bell, BellOff, Navigation as NavigationIcon } from 'lucide-react';
+import { MapPin, Clock, Bell, BellOff, Navigation as NavigationIcon, RefreshCw } from 'lucide-react';
 import { usePrayerTimes } from '../../hooks/usePrayerTimes';
-import { useGeolocation } from '../../hooks/useGeolocation';
+import { useAdvancedGeolocation } from '../../hooks/useAdvancedGeolocation';
 import { useAppStore } from '../../store/useAppStore';
 import { islamicUtils } from '../../utils/islamicUtils';
 import LoadingSpinner from '../common/LoadingSpinner';
 
 const PrayerTimes: React.FC = () => {
-  const { data: prayerData, isLoading, error } = usePrayerTimes();
-  const geolocation = useGeolocation();
+  const { data: prayerData, isLoading, error, refetch } = usePrayerTimes();
+  const { location: geolocation, loading: geolocationLoading, error: geolocationError, getLocation } = useAdvancedGeolocation();
   const { 
     theme, 
     currentLocation, 
@@ -18,6 +18,7 @@ const PrayerTimes: React.FC = () => {
   } = useAppStore();
   const [cityInput, setCityInput] = useState('');
   const [nextPrayerInfo, setNextPrayerInfo] = useState<{ nextPrayer: string; timeLeft: string } | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Update next prayer info every minute
   useEffect(() => {
@@ -36,16 +37,16 @@ const PrayerTimes: React.FC = () => {
 
   // Auto-detect location
   useEffect(() => {
-    if (!currentLocation) {
+    // Hanya atur lokasi otomatis jika belum ada lokasi yang diset
+    if (!currentLocation && !geolocationLoading) {
       if (geolocation.latitude !== null && geolocation.longitude !== null) {
         setLocation({
-          city: 'Lokasi Saat Ini',
+          city: geolocation.city || 'Lokasi Saat Ini',
           latitude: geolocation.latitude,
           longitude: geolocation.longitude,
         });
-      } else if (geolocation.error && !geolocation.loading) {
-        // If there's an error with geolocation and it's not still loading,
-        // set a default location (Jakarta)
+      } else if (geolocationError && !currentLocation) {
+        // Jika ada error geolocation, set lokasi default (Jakarta)
         setLocation({
           city: 'Jakarta',
           latitude: -6.2088,
@@ -53,14 +54,14 @@ const PrayerTimes: React.FC = () => {
         });
       }
     }
-  }, [geolocation, currentLocation, setLocation]);
+  }, [geolocation, geolocationError, geolocationLoading, currentLocation, setLocation]);
 
   const handleCitySubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (cityInput.trim()) {
       setLocation({
         city: cityInput.trim(),
-        // For city-based lookups, we set lat/long to null so the API knows to search by city name
+        // Untuk pencarian berdasarkan kota, kita set lat/long ke NaN agar API tahu untuk mencari berdasarkan nama kota
         latitude: NaN,
         longitude: NaN,
       });
@@ -71,16 +72,29 @@ const PrayerTimes: React.FC = () => {
   const handleUseCurrentLocation = () => {
     if (geolocation.latitude !== null && geolocation.longitude !== null) {
       setLocation({
-        city: 'Lokasi Saat Ini',
+        city: geolocation.city || 'Lokasi Saat Ini',
         latitude: geolocation.latitude,
         longitude: geolocation.longitude,
       });
+    } else {
+      // Jika lokasi belum tersedia, coba refresh
+      getLocation();
     }
+  };
+
+  // Fungsi untuk merefresh data geolocation
+  const handleRefreshLocation = () => {
+    // Merefresh data dengan mengatur ulang lokasi ke null terlebih dahulu
+    setLocation(null);
+    // Memaksa refetch data jadwal sholat
+    refetch();
+    // Merefresh geolocation
+    getLocation();
   };
 
   const prayerNames = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading && !isRefreshing) return <LoadingSpinner />;
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -91,18 +105,30 @@ const PrayerTimes: React.FC = () => {
           <h1 className="text-xl sm:text-2xl font-bold">Jadwal Sholat</h1>
         </div>
         
-        <button
-          onClick={togglePrayerNotifications}
-          className={`p-2 rounded-lg transition-colors duration-200 ${
-            theme.isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
-          }`}
-        >
-          {prayerNotifications ? (
-            <Bell className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-600" />
-          ) : (
-            <BellOff className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400" />
-          )}
-        </button>
+        <div className="flex space-x-2">
+          <button
+            onClick={handleRefreshLocation}
+            disabled={isRefreshing || geolocationLoading}
+            className={`p-2 rounded-lg transition-colors duration-200 ${
+              theme.isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
+            } ${(isRefreshing || geolocationLoading) ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            <RefreshCw className={`h-5 w-5 sm:h-6 sm:w-6 ${(isRefreshing || geolocationLoading) ? 'animate-spin' : ''} ${theme.isDark ? 'text-gray-400' : 'text-gray-600'}`} />
+          </button>
+          
+          <button
+            onClick={togglePrayerNotifications}
+            className={`p-2 rounded-lg transition-colors duration-200 ${
+              theme.isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
+            }`}
+          >
+            {prayerNotifications ? (
+              <Bell className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-600" />
+            ) : (
+              <BellOff className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400" />
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Location Input */}
@@ -142,16 +168,24 @@ const PrayerTimes: React.FC = () => {
             <button
               type="button"
               onClick={handleUseCurrentLocation}
-              disabled={geolocation.loading || (geolocation.latitude === null && geolocation.longitude === null)}
+              disabled={geolocationLoading}
               className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <NavigationIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+              {geolocationLoading ? (
+                <RefreshCw className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
+              ) : (
+                <NavigationIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+              )}
             </button>
           </div>
         </form>
         
-        {geolocation.error && (
-          <p className="text-xs sm:text-sm text-amber-600 mt-2">{geolocation.error}</p>
+        {geolocationLoading && (
+          <p className="text-xs sm:text-sm text-blue-600 mt-2">Mendeteksi lokasi...</p>
+        )}
+        
+        {geolocationError && (
+          <p className="text-xs sm:text-sm text-amber-600 mt-2">{geolocationError}</p>
         )}
       </div>
 
@@ -217,14 +251,17 @@ const PrayerTimes: React.FC = () => {
           <p className={`text-xs sm:text-sm ${theme.isDark ? 'text-red-300' : 'text-red-700'}`}>
             {error.message || 'Pastikan koneksi internet Anda stabil dan coba lagi'}
           </p>
-          {currentLocation && (
+          {geolocationError && (
             <p className={`text-xs mt-1 sm:mt-2 ${theme.isDark ? 'text-red-400' : 'text-red-600'}`}>
-              Lokasi saat ini: {currentLocation.city} 
-              {currentLocation.latitude && currentLocation.longitude && !isNaN(currentLocation.latitude) && !isNaN(currentLocation.longitude) 
-                ? ` (${currentLocation.latitude.toFixed(4)}, ${currentLocation.longitude.toFixed(4)})` 
-                : ''}
+              {geolocationError}
             </p>
           )}
+          <button
+            onClick={handleRefreshLocation}
+            className="mt-2 px-3 py-1 bg-red-600 text-white rounded text-xs"
+          >
+            Coba Lagi
+          </button>
         </div>
       )}
     </div>

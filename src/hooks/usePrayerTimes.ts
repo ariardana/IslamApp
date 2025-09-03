@@ -17,18 +17,34 @@ export const usePrayerTimes = () => {
             currentLocation.longitude
           );
         } else if (currentLocation?.city) {
-          return await prayerTimesApi.getPrayerTimesByCity(currentLocation.city, 'Indonesia');
+          // Jika lokasi saat ini adalah lokasi geolocation, coba dengan kota default jika gagal
+          if (currentLocation.city === 'Lokasi Saat Ini') {
+            try {
+              return await prayerTimesApi.getPrayerTimesByCoordinates(
+                currentLocation.latitude,
+                currentLocation.longitude
+              );
+            } catch (coordError) {
+              // Jika gagal dengan koordinat, fallback ke Jakarta
+              console.warn('Gagal dengan koordinat, fallback ke Jakarta:', coordError);
+              return await prayerTimesApi.getPrayerTimesByCity('Jakarta', 'Indonesia');
+            }
+          } else {
+            return await prayerTimesApi.getPrayerTimesByCity(currentLocation.city, 'Indonesia');
+          }
         } else {
           // Default to Jakarta
           return await prayerTimesApi.getPrayerTimesByCity('Jakarta', 'Indonesia');
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching prayer times:', error);
-        throw new Error('Gagal memuat jadwal sholat. Silakan coba lagi.');
+        throw new Error(error.message || 'Gagal memuat jadwal sholat. Silakan coba lagi.');
       }
     },
     enabled: true,
     refetchInterval: 60000, // Refetch every minute
     staleTime: 300000, // 5 minutes
+    retry: 2, // Mencoba ulang 2 kali jika gagal
+    retryDelay: 1000, // Delay 1 detik sebelum mencoba ulang
   });
 };
