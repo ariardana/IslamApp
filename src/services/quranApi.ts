@@ -109,7 +109,7 @@ export const quranApi = {
         numberOfAyahs: surah.jumlahAyat,
         revelationType: surah.tempatTurun,
         description: surah.deskripsi,
-        audio: surah.audioFull ? Object.values(surah.audioFull)[0] : undefined,
+        audio: surah.audioFull ? surah.audioFull['01'] : undefined,
         namaLatin: surah.namaLatin,
         tempatTurun: surah.tempatTurun,
         arti: surah.arti,
@@ -160,7 +160,7 @@ export const quranApi = {
         numberOfAyahs: response.data.data.jumlahAyat,
         revelationType: response.data.data.tempatTurun,
         description: response.data.data.deskripsi,
-        audio: response.data.data.audioFull ? Object.values(response.data.data.audioFull)[0] : undefined,
+        audio: response.data.data.audioFull ? response.data.data.audioFull['01'] : undefined,
         namaLatin: response.data.data.namaLatin,
         tempatTurun: response.data.data.tempatTurun,
         arti: response.data.data.arti,
@@ -175,7 +175,7 @@ export const quranApi = {
           ruku: 0, // Not provided in new API
           hizbQuarter: 0, // Not provided in new API
           sajda: false, // Not provided in new API
-          audio: ayah.audio ? Object.values(ayah.audio)[0] : undefined,
+          audio: ayah.audio ? ayah.audio['01'] : undefined,
           nomorAyat: ayah.nomorAyat,
           teksArab: ayah.teksArab,
           teksLatin: ayah.teksLatin,
@@ -229,7 +229,7 @@ export const quranApi = {
         numberOfAyahs: response.data.data.jumlahAyat,
         revelationType: response.data.data.tempatTurun,
         description: response.data.data.deskripsi,
-        audio: response.data.data.audioFull ? Object.values(response.data.data.audioFull)[0] : undefined,
+        audio: response.data.data.audioFull ? response.data.data.audioFull['01'] : undefined,
         namaLatin: response.data.data.namaLatin,
         tempatTurun: response.data.data.tempatTurun,
         arti: response.data.data.arti,
@@ -244,7 +244,7 @@ export const quranApi = {
           ruku: 0, // Not provided in new API
           hizbQuarter: 0, // Not provided in new API
           sajda: false, // Not provided in new API
-          audio: ayah.audio ? Object.values(ayah.audio)[0] : undefined,
+          audio: ayah.audio ? ayah.audio['01'] : undefined,
           translation: ayah.teksIndonesia,
           transliteration: ayah.teksLatin,
           nomorAyat: ayah.nomorAyat,
