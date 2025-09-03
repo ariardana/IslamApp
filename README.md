@@ -146,21 +146,7 @@ src/
 ### Menggunakan Bookmark
 1. Temukan konten yang telah disimpan
 2. Akses kembali ayat atau doa favorit
-3. Hapus bookmark yang tidak diperlukan
-
-## 🏗️ Arsitektur Aplikasi
-
-### State Management
-- **Zustand**: Global state untuk theme dan preferences
-- **React Query**: Caching dan fetching data API
-
-### Component Architecture
-- **Separation of Concerns**: Logic, UI, dan data terpisah
-- **Reusable Components**: Komponen dapat digunakan kembali
-
-### Performance Optimizations
-- **Lazy Loading**: Load komponen saat diperlukan
-- **Memoization**: Prevent unnecessary re-renders
+3. Hapus bookmark yang tidak diperlukan.
 
 ## 🌐 Deployment
 
@@ -468,14 +454,6 @@ IslamApp menyediakan API endpoints yang dapat digunakan untuk mengakses data kei
   }
   ```
 
-## 📱 Responsif Mobile
-
-Aplikasi ini dirancang dengan pendekatan mobile-first:
-- **Navigasi Bawah**: Menu navigasi di bagian bawah untuk akses mudah di mobile
-- **Scroll Horizontal**: Menu dapat di-scroll horizontal pada layar kecil
-- **Layout Adaptif**: Menyesuaikan dengan ukuran layar perangkat
-- **Touch Friendly**: Elemen interaktif dioptimalkan untuk layar sentuh
-
 ## 🧪 Testing
 
 ### Development Server
@@ -520,36 +498,10 @@ npm run build
 - Coba refresh halaman beberapa kali
 - Jika masalah persisten, laporkan sebagai issue di GitHub
 
-## 🤝 Kontribusi
-
-Kami menyambut kontribusi dari komunitas! Untuk berkontribusi:
-
-### Development Setup
-1. Fork repository ini
-2. Buat branch baru: `git checkout -b feature/amazing-feature`
-3. Commit changes: `git commit -m 'Add amazing feature'`
-4. Push ke branch: `git push origin feature/amazing-feature`
-5. Buat Pull Request
-
-### Contribution Guidelines
-- Ikuti code style yang ada
-- Tulis tests untuk fitur baru
-- Update dokumentasi jika diperlukan
-- Pastikan semua tests pass
-
-## 📄 Lisensi
-
-Aplikasi ini dilisensikan under MIT License. Lihat file [LICENSE](LICENSE) untuk detail lengkap.
-
-## 👥 Tim Pengembang
-
-- **Frontend Developer**: React.js, TypeScript, Tailwind CSS
-
-## 📞 Support
 
 Butuh bantuan? Hubungi kami:
 - **GitHub Issues**: [Create New Issue](https://github.com/ariardana/IslamApp/issues)
 
 ---
 
-**Built with ❤️ for the Muslim community**
+**Built with ❤️ By Ari**
