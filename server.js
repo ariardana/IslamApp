@@ -15,11 +15,6 @@ app.use(cors());
 // Parse JSON bodies
 app.use(express.json());
 
-// Serve static files from the dist folder in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, 'dist')));
-}
-
 // Logging middleware
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
@@ -174,7 +169,11 @@ app.get('/api/quran/surahs', async (req, res) => {
     res.json(surahs);
   } catch (error) {
     console.error('Error fetching surahs:', error);
-    res.status(500).json({ error: 'Failed to fetch surahs' });
+    res.status(500).json({ 
+      error: 'Failed to fetch surahs',
+      message: error.message,
+      ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
+    });
   }
 });
 
@@ -237,7 +236,11 @@ app.get('/api/quran/surahs/:number', async (req, res) => {
     res.json(surah);
   } catch (error) {
     console.error(`Error fetching surah ${req.params.number}:`, error);
-    res.status(500).json({ error: 'Failed to fetch surah' });
+    res.status(500).json({ 
+      error: 'Failed to fetch surah',
+      message: error.message,
+      ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
+    });
   }
 });
 
@@ -339,7 +342,8 @@ app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);
   res.status(500).json({ 
     error: 'Internal server error',
-    message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
+    message: err.message || 'Something went wrong',
+    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
   });
 });
 
@@ -351,12 +355,6 @@ app.use('/api', (req, res) => {
 // Handle 404 for API routes
 app.use('/api/*', (req, res) => {
   res.status(404).json({ error: 'API endpoint not found' });
-});
-
-// Handle all other routes (let client-side routing handle it)
-app.get('*', (req, res) => {
-  // For Vercel, we'll send the index.html for client-side routing
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 // Export for Vercel serverless functions
