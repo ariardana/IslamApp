@@ -34,14 +34,14 @@ apiClient.interceptors.response.use(
 
 // Function to get static prayer data
 const getStaticPrayers = async (): Promise<Prayer[]> => {
-  const response = await fetch('/data/prayers.json');
+  const response = await fetch('/data/doa.json');
   const prayers = await response.json();
   return prayers;
 };
 
 // Function to search static prayer data
 const searchStaticPrayers = async (query: string): Promise<Prayer[]> => {
-  const response = await fetch('/data/prayers.json');
+  const response = await fetch('/data/doa.json');
   const prayers = await response.json();
   return prayers.filter(prayer => 
     prayer.title.toLowerCase().includes(query.toLowerCase()) ||
@@ -51,7 +51,7 @@ const searchStaticPrayers = async (query: string): Promise<Prayer[]> => {
 
 // Function to get a specific static prayer by ID
 const getStaticPrayerById = async (id: string): Promise<Prayer> => {
-  const response = await fetch('/data/prayers.json');
+  const response = await fetch('/data/doa.json');
   const prayers = await response.json();
   const prayer = prayers.find(p => p.id === id);
   if (!prayer) {
