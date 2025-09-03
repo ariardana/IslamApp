@@ -8,19 +8,16 @@ import { Prayer } from '../../types';
 
 // Function to get static doa data
 const getStaticDoa = async (): Promise<Prayer[]> => {
-  const response = await fetch('/src/data/doa.json');
+  const response = await fetch('/api/prayers');
   const doa = await response.json();
   return doa;
 };
 
 // Function to search static doa data
 const searchStaticDoa = async (query: string): Promise<Prayer[]> => {
-  const response = await fetch('/src/data/doa.json');
+  const response = await fetch(`/api/prayers/search?q=${encodeURIComponent(query)}`);
   const doa = await response.json();
-  return doa.filter((d: Prayer) => 
-    d.title.toLowerCase().includes(query.toLowerCase()) ||
-    d.translation.toLowerCase().includes(query.toLowerCase())
-  );
+  return doa;
 };
 
 const DoaList: React.FC = () => {

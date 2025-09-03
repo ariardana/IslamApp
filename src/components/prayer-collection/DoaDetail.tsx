@@ -8,13 +8,9 @@ import { Prayer } from '../../types';
 
 // Function to get static doa data by ID
 const getStaticDoaById = async (id: string): Promise<Prayer> => {
-  const response = await fetch('/src/data/doa.json');
+  const response = await fetch(`/api/prayers/${id}`);
   const doa = await response.json();
-  const selectedDoa = doa.find((d: Prayer) => d.id === id);
-  if (!selectedDoa) {
-    throw new Error('Doa not found');
-  }
-  return selectedDoa;
+  return doa;
 };
 
 const DoaDetail: React.FC = () => {
