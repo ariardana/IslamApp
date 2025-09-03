@@ -174,6 +174,20 @@ npm run build
 npm run preview
 ```
 
+### Deployment Options
+- **Vercel**: Works out of the box with static deployment
+- **Netlify**: `netlify deploy --prod --dir=dist`
+- **GitHub Pages**: Push to branch gh-pages
+
+### Environment Variables
+No environment variables are required for production deployment.
+
+### API Data
+- **Prayers**: Static data included in the build for production
+- **Quran**: Fetched from external API (quran-api.santrikoding.com)
+- **Prayer Times**: Fetched from external API (api.aladhan.com)
+- **Calendar**: Fetched from external API (api.aladhan.com)
+
 ## 📱 Responsif Mobile
 
 Aplikasi ini dirancang dengan pendekatan mobile-first:
