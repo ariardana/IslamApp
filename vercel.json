@@ -7,13 +7,6 @@
       "config": {
         "includeFiles": ["dist/**"]
       }
-    },
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
     }
   ],
   "routes": [
@@ -23,7 +16,11 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/index.html"
+      "dest": "/dist/$1"
     }
-  ]
+  ],
+  "env": {
+    "NODE_ENV": "production",
+    "VITE_API_BASE_URL": "https://equran.id/api/v2"
+  }
 }

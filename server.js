@@ -1,6 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 import axios from 'axios';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -9,6 +14,11 @@ app.use(cors());
 
 // Parse JSON bodies
 app.use(express.json());
+
+// Serve static files from the dist folder in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'dist')));
+}
 
 // Logging middleware
 app.use((req, res, next) => {
@@ -142,7 +152,8 @@ app.get('/api/prayers/:id', async (req, res) => {
 app.get('/api/quran/surahs', async (req, res) => {
   try {
     console.log('Proxying request to equran.id API for surahs - USING EQURAN.ID API');
-    const response = await axios.get('https://equran.id/api/v2/surat');
+    const apiUrl = process.env.VITE_API_BASE_URL || 'https://equran.id/api/v2';
+    const response = await axios.get(`${apiUrl}/surat`);
     
     // Transform the response to match our application's expected format
     const surahs = response.data.data.map(surah => ({
@@ -172,7 +183,8 @@ app.get('/api/quran/surahs/:number', async (req, res) => {
   try {
     const { number } = req.params;
     console.log(`Proxying request to equran.id API for surah ${number}`);
-    const response = await axios.get(`https://equran.id/api/v2/surat/${number}`);
+    const apiUrl = process.env.VITE_API_BASE_URL || 'https://equran.id/api/v2';
+    const response = await axios.get(`${apiUrl}/surat/${number}`);
     
     // Log response for debugging
     console.log(`Received response for surah ${number}:`, {
@@ -336,23 +348,24 @@ app.use('/api', (req, res) => {
   res.status(404).json({ error: 'API endpoint not found' });
 });
 
-// Handle 404 for all other routes (let client-side routing handle it)
-app.get('/api/*path', (req, res) => {
-  // For Vercel, we'll send the index.html for client-side routing
-  res.sendFile('index.html', { root: '.' });
+// Handle 404 for API routes
+app.use('/api/*', (req, res) => {
+  res.status(404).json({ error: 'API endpoint not found' });
 });
 
-// Handle root route
-app.get('/', (req, res) => {
+// Handle all other routes (let client-side routing handle it)
+app.get('*', (req, res) => {
   // For Vercel, we'll send the index.html for client-side routing
-  res.sendFile('index.html', { root: '.' });
-});
-
-// Start the server if this file is run directly
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 // Export for Vercel serverless functions
 export default app;
+
+// Start the server if this file is run directly
+const PORT = process.env.PORT || 3001;
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
