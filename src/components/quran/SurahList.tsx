@@ -121,7 +121,7 @@ const SurahList: React.FC = () => {
                       •
                     </span>
                     <p style={{ color: theme.isDark ? 'inherit' : 'black' }} className={`text-xs ${theme.isDark ? 'text-amber-300' : 'text-black'}`}>
-                      {surah.revelationType === 'mekkah' ? 'Mekkah' : 'Madinah'}
+                      {surah.revelationType === 'Mekah' ? 'Mekkah' : 'Madinah'}
                     </p>
                   </div>
                   <p style={{ color: theme.isDark ? 'inherit' : 'black' }} className={`text-sm mt-1 ${theme.isDark ? 'text-amber-300' : 'text-black'}`}>
